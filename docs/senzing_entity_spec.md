@@ -237,10 +237,31 @@ That being said there are three usage types that do have meaning in Senzing.  Th
 
 ## Mapping Identifiers
 
-Some data sources have fields named SSN, DL_NUM, PASSPRT, etc.  This is a simple field name mapping to the appropriate Senzing attribute.
+Some data sources have fields named SSN, DL_NUM, PASSPRT, etc.  This is a simple field name mapping to the appropriate Senzing feature.  Other data sources, especially data providers, have a sublist of identifiers with an identifier type that can be used to determine the appropriate Senzing feature.
 
-Other data sources, especially data providers, have a sublist of identifiers with an id_type such as: SSN, PP, VAT, EIN, etc.  When the list is small, you can code this with a case statement.  When it is large, you may want to consider a mapping table.
+### **Mapping Guidance (for Mapping Identifiers)**
 
+- When mapping from a source field name, always look for and map the corresponding field that indicates who issued the identifier.  For example:
+    - country for a passport 
+    - state or country for a drivers license
+    - country for a national_id or a tax_id
+
+- When there is a sublist of identifiers, there may be 3 fields:
+    - an id_type field such as: PASSPORT, DRIVERS_LICENSE, SSN, EIN, TIN, VAT, CEDULA, SIREN, CUI, NIT. 
+    - the id_number field
+    - an id_country: can be a country, state or province
+    
+    When id_country is missing, it is likely imbedded in the id_type field which will have values like AUT_PASSPORT and AUT_TIN. Always try to determine the country who issued the identifier, although there mignt not be one.  Especially in the case of organizations such as GLEIF who issue the LEI_NUMBER.
+
+For various IDs issued by countries, you will find it is either used 
+
+### **Mapping Rules (for Mapping Identifiers)**
+
+1. **Always** map to PASSPORT, DRLIC, SSN, LEI_NUMBER, etc when the source field or id_type indicates it is one of those.
+2. There are 3 features you can map to when the source field is not one of those.  They are:
+    1. NATIONAL_ID: Map the id_type to this when it is issued by a country an entity should only have one 
+    2. TAX_ID: Map the id_type to this when it is used for tax purposes.
+    3. OTHER_ID: Map the id_type to this when it is issued by some other organization.  However, do consider adding a new feature for an id_type that is used by a lot of entities.  That's how we decided to add NPI_NUMBER and LEI_NUMBER to our standard config.
 
 ## Mapping Relationships
 
@@ -257,16 +278,17 @@ There are two scenarios you may find on source records that seemingly only conta
     - When you do create an entity like this, there will be no unique ID to map to, so use a hash of its features as RECORD_ID. 
     - This will likely create many duplicate records.  If this is a large data source, the duplicates should be removed from the resulting output.
 
-For multi-schema data sources, look for a relationship schema that has fields like id1, id2 and a relationship type or role. 
-
+3. For multi-schema data sources, look for a relationship schema that has fields like id1, id2 and a relationship type or role. Relationships **MUST** be considered a child schema for source entity based on whatever the id1 field is.
 
 ### **Mapping Rules (for Relationships)**
 
-1. Always check for and map relationships between entities.
+1. **Always** check for and map relationships between entities.
 
-2. Always map the relationship as if it will be unidirectional.  You will need to decide which entity record to point to the other.   Usually, but not always, the primary entity the source record is about points to the other entity or entities.
+2. **Always** map the relationship as if it will be unidirectional.  You will need to decide which entity record to point to the other.   Usually, but not always, the primary entity the source record is about points to the other entity or entities.
 
-3. The entity you point to must have a REL_ANCHOR feature.  A good rule of thumb is to map a REL_ANCHOR feature to any entity record that *could be* pointed to.   
+3. The entity you point to must have a REL_ANCHOR feature.  A good rule of thumb is to **always** map a REL_ANCHOR feature to any entity record that *could be* pointed to.
+
+4. Relationships are created by 
 
 ## Updating vs Replacing Records
 
