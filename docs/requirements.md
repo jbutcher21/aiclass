@@ -36,11 +36,7 @@ There are two final deliverables:
 
 4. Once you have completed all the mappings of all the schemas, you may then generate code.  The user will review it and maybe even test it.  This again is an iterative process until the user is happy with the mapping and is ready to save.   
 
-# Save the final deliverables
-
-Prompt the user to save the final mapping markdown file and generated code.
-
-**CRITICAL MAPPING CONSTRAINTS:**
+# **CRITICAL MAPPING CONSTRAINTS:**
 
 1. **DO NOT CREATE NEW ATTRIBUTES**: You can ONLY use attributes that exist in the Senzing Entity Specification. You CANNOT create or make up new attribute names.
 
