@@ -164,23 +164,23 @@ In this case the flat source record likely had a set of fields for a home addres
 ### **Mapping Rules (for Flat JSON Structure)**
 1. If you have to use a prefix, it must be a single token with no punctuation for the Senzing parser to recognize it.
 
-# Types of data sources
+# Source Schema Types
 
-Data sources you will be asked to map to Senzing range from the very simple to the very complex. Here are some of the types we have run into so far and some instructions on how to map them.
+Data sources you will be asked to map to Senzing range from the very simple to the very complex. Here are some of the schema types we have run into so far and some instructions on how to map them.
 
-## **Source Type 1** 
+## **Schema Type 1** 
 
 A single flat table that seemingly contains one line per entity.  There is usually a unique key, and columns that contain names, addresses, phone numbers, etc.  
 
-## **Source Type 2** 
+## **Schema Type 2** 
 
 A single flat table with multiple rows per entity.  Usually there are only one set of name fields, address fields, etc.  But if an entity has more than one address, it will have multiple rows. Sometimes there is a secondary key that can be used to find all the rows for an entity.  Sometimes you have to derive one from multiple fields. Certain watch lists are like this because they are designed for ease of searching rather than for entity resolution.
 
-## **Source Type 3**
+## **Schema Type 3**
 
 A single seemingly flat table, but the columns might contain lists:  Many XML, JSON or Parquet files are like this. There will only be one row per entity, but the name field(s) may have a list of names, the address field(s) a list of addresses, etc.
 
-## **Source Type 4** 
+## **Schema Type 4** 
 
 Multiple tables or files per entity.  This is often the case when pulling entities out of a normalized database, but can also occur when you receive a dump of a database in a single JSON or XML source file.
 
@@ -190,7 +190,7 @@ Multiple tables or files per entity.  This is often the case when pulling entiti
 
 - Since Senzing requires one message per entity, you have to join all the master and child tables together. A good approach here is to map each file and join them together for the final step. Spark is a good candidate for this source type.
 
-## **Source Type 5** 
+## **Schema Type 5** 
 
 Transaction table with embedded entities.  Wire transfers are a good example of this as they reference external accounts with an account number, name and address that aren't well controlled.  Furthermore, there may be thousands with the exact same values.  A good approach here is to extract the identifying fields and dedupe them before sending to Senzing.  You can create a unique key by hashing the identifying fields to use as a RECORD_ID in Senzing and also stamp it on the transaction record itself so that you can join the transaction to its resolved entity in Senzing for analysis.
 

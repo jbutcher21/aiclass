@@ -1,2 +1,6 @@
-#fetch
+#fetch https://raw.githubusercontent.com/jbutcher21/aiclass/refs/heads/main/docs/requirements.md
+
+-- add schema folder as context
+I have attached the schema folder as context.  Lets begin
+
 
