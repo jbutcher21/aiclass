@@ -128,11 +128,51 @@ In prior versions we recommended a flat JSON structure with a separate sublist f
 3. All **Payload Attributes** should be placed at the root level.
 4. Because a feature in Senzing *can* have multiple attributes, you cannot supply a JSON list even if there is only one.
 
-![Screenshot](images/ges-image-invalid_json.jpg)
+#### Examples
+
+##### ✅ Correct JSON
+```json
+{
+    "DATA_SOURCE": "CUSTOMERS",
+    "RECORD_ID": "1001",
+    "FEATURES":
+    [
+        {
+            "PHONE_TYPE": "WORK",
+            "PHONE_NUMBER": "800-101-1111"
+        },
+        {
+            "PHONE_TYPE": "MOBILE",
+            "PHONE_NUMBER": "702-202-2222"
+        }
+    ],
+    "CUSTOMER_SINCE": "06/15/2020",
+    "STATUS": "Active"
+}
+
+##### ❌ Incorrect JSON
+```json
+{
+    "FEATURES":
+    [
+        {
+            "PHONE_NUMBER":  // ❌ Do not use a list structure for multiple attributes
+            [
+                "800-101-1111",
+                "800-202-2222"
+            ]
+        }
+    ],
+    "PAYLOAD": { // ❌ Do not nest payload attributes inside another object
+        "CUSTOMER_SINCE": "06/15/2020",
+        "STATUS": "Active"
+    }
+}
+```
 
 ## Flat JSON Structure
 
-We still support flat JSON which can be tempting when the source data is flat. Still you may have to deal with multiple values for the same feature.  
+We still support flat JSON which can be tempting when the source data is flat. Just remember, you have to use distinct attribute names for when you have more than one of a feature.
 
 ```JSON
 {
@@ -239,7 +279,7 @@ That being said there are three usage types that do have meaning in Senzing.  Th
 
 Some data sources have fields named SSN, DL_NUM, PASSPRT, etc.  This is a simple field name mapping to the appropriate Senzing feature.  Other data sources, especially data providers, have a sublist of identifiers with an identifier type that can be used to determine the appropriate Senzing feature.
 
-### **Mapping Guidance (for Mapping All Identifiers)**
+### **Mapping Guidance (for Mapping Identifiers)**
 
 #### Mapping from Source Field Names
 
@@ -304,9 +344,9 @@ There are two scenarios you may find on source records that seemingly only conta
 
 2. **Always** map the relationship as if it will be unidirectional.  You will need to decide which entity record to point to the other.   Usually, but not always, the primary entity the source record is about points to the other entity or entities.
 
-3. The entity you point to must have a REL_ANCHOR feature.  A good rule of thumb is to **always** map a REL_ANCHOR feature to any entity record that *could be* pointed to.
+3. The entity you point to must have a REL_ANCHOR feature.  A good rule of thumb is to **always** map a REL_ANCHOR feature to any entity record that *could be* pointed to.  
 
-4. Relationships are created by 
+4. Any given record should only ever have one REL_ANCHOR feature, but can have multiple REL_POINTER features.
 
 ## Updating vs Replacing Records
 
@@ -388,6 +428,29 @@ There are three ways to map names:
 | NAME_MIDDLE | String | J | This is the middle name of an individual. |
 | NAME_PREFIX | String | Mr | This is a prefix for an individual's name such as the titles: Mr, Mrs, Ms, Dr, etc. |
 | NAME_SUFFIX | String | MD | This is a suffix for an individual's name and may include generational references such as: JR, SR, I, II, III and/or professional designations such as: MD, PHD, PMP, etc. |
+
+#### Examples
+
+##### ✅ Correct JSON
+```json
+{
+  "FEATURES": [
+    {"NAME_LAST": "Smith", "NAME_FIRST": "Robert", "NAME_MIDDLE": "A"}
+  ]
+}
+```
+
+##### ❌ Incorrect JSON
+```json
+{
+  "FEATURES": [
+    {"NAME_LAST": "Smith"}, 
+    {"NAME_FIRST": "Robert"}, 
+    {"NAME_MIDDLE": "A"}
+  ]
+}
+```
+
 
 ### Feature: NAME (organization)
 
@@ -509,9 +572,7 @@ There are two ways to map addresses:
 | --- | --- | --- | --- | 
 | REGISTRATION_COUNTRY | String | US | This is the country the organization was registered in, like place of birth is to a person. |
 
-## Government-issued identifiers
-
-Government issued IDs help to confirm or deny matches. The following identifiers should be mapped if available.
+## Identifiers
 
 ### Feature: PASSPORT
 
@@ -555,13 +616,13 @@ PASSPORT_COUNTRY | String | US | This is the country that issued it. |
 
 | Attribute | Type | Example | Notes |
 | --- | --- | --- | --- |
-| OTHER_ID_TYPE | String | ISIN | Optional: use with caution! see the section on mapping identifiers above.|
+| OTHER_ID_TYPE | String | ISIN | Highly Desired: see the section on mapping identifiers above.|
 | OTHER_ID_NUMBER | String | 123121234 | This is the actual ID number. |
 | OTHER_ID_COUNTRY | String | MX | This is the country that issued it.|
 
 #### **Mapping Guidance (for Feature: OTHER_ID)**
 
-* Use OTHER_ID sparingly! It is a catch-all for identifiers you don't know much about. It is always better to add a new identifier rather than just putting a lot of different types in this one feature. One reason is you might get cross type false positives!
+* Use OTHER_ID sparingly! It is a catch-all for identifiers you don't know much about. It is always better to add a new feature rather than just putting a lot of different identifiers in this one feature. One reason is you might get cross type false positives!
 
 ### Feature: TRUSTED_ID 
 
@@ -573,10 +634,6 @@ PASSPORT_COUNTRY | String | US | This is the country that issued it. |
 #### **Mapping Guidance (for Feature: TRUSTED_ID)**
 
 * Trusted IDs are primarily used to manually force records together or apart as described here … [https://senzing.zendesk.com/hc/en-us/articles/360023523354-How-to-force-records-togetheror-apart](https://senzing.zendesk.com/hc/en-us/articles/360023523354-How-to-force-records-together-or-apart)
-
-## Identifiers issued by organizations
-
-The following identifiers have been added over time and should also be mapped if available.
 
 ### Feature: ACCOUNT
 
