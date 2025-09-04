@@ -239,29 +239,47 @@ That being said there are three usage types that do have meaning in Senzing.  Th
 
 Some data sources have fields named SSN, DL_NUM, PASSPRT, etc.  This is a simple field name mapping to the appropriate Senzing feature.  Other data sources, especially data providers, have a sublist of identifiers with an identifier type that can be used to determine the appropriate Senzing feature.
 
-### **Mapping Guidance (for Mapping Identifiers)**
+### **Mapping Guidance (for Mapping All Identifiers)**
 
-- When mapping from a source field name, always look for and map the corresponding field that indicates who issued the identifier.  For example:
-    - country for a passport 
-    - state or country for a drivers license
-    - country for a national_id or a tax_id
+#### Mapping from Source Field Names
 
-- When there is a sublist of identifiers, there may be 3 fields:
-    - an id_type field such as: PASSPORT, DRIVERS_LICENSE, SSN, EIN, TIN, VAT, CEDULA, SIREN, CUI, NIT. 
-    - the id_number field
-    - an id_country: can be a country, state or province
-    
-    When id_country is missing, it is likely imbedded in the id_type field which will have values like AUT_PASSPORT and AUT_TIN. Always try to determine the country who issued the identifier, although there mignt not be one.  Especially in the case of organizations such as GLEIF who issue the LEI_NUMBER.
+When mapping from a source field name, always look for and map the corresponding field that indicates who issued the identifier.  For example:
+- country for a passport 
+- state or country for a drivers license
+- country for a national_id or a tax_id
 
-For various IDs issued by countries, you will find it is either used 
+#### Mapping from a Sublist of Identifiers
+
+When there is a sublist of identifiers, there may be 3 fields:
+- an id_type field such as: PASSPORT, DRIVERS_LICENSE, SSN, EIN, TIN, VAT, CEDULA, SIREN, CUI, NIT. 
+- the id_number field
+- an id_country: can be a country, state or province.  When this is missing, it may be part of the id_type (e.g., AUS-PASSPORT, RU-INN).
+
+There are many different identifier types and different sources don't follow the same codification standandards. For instance "EIN" and "FEIN" may both used as the type for the US Employer Identification Number used for Tax purposes.  Mapping to one of the Senzing features is the way to standardize them so they can be matched.
+
+Sometimes the only way to know what type of identifier it is to look it up on the internet.  You are trying to determine:
+1. If it is truly an identifier.  Sometimes data sources use this as a dumping ground for other kinds of information such as industry classification codes like "NAICS" or even "registration date".  You might even find "phone number" as a type which of course should be mapped to the PHONE feature.
+2. Who issues it: Usually a country, state or province, or organization such D&B's DUNS number or GLEIF's LEI number.
 
 ### **Mapping Rules (for Mapping Identifiers)**
 
-1. **Always** map to PASSPORT, DRLIC, SSN, LEI_NUMBER, etc when the source field or id_type indicates it is one of those.
-2. There are 3 features you can map to when the source field is not one of those.  They are:
-    1. NATIONAL_ID: Map the id_type to this when it is issued by a country an entity should only have one 
-    2. TAX_ID: Map the id_type to this when it is used for tax purposes.
-    3. OTHER_ID: Map the id_type to this when it is issued by some other organization.  However, do consider adding a new feature for an id_type that is used by a lot of entities.  That's how we decided to add NPI_NUMBER and LEI_NUMBER to our standard config.
+There are 3 non-specific identifier features: They are: NATIONAL_ID, TAX_ID and OTHER_ID.  All other features in the identifier sections (e.g., PASSPORT, SSN, LEI_NUMBER) should be considered specific features.
+
+1. Map to the the specific feature attributes when the source field or id_type indicates it is one of those.
+
+2. Map to the NATIONAL_ID feature attributes when the identifier type indicates it is issued by a country and the entity is usually only ever issued one.  (e.g., National Corporate ID in Japan, Companies House Registration Number in the UK, SIREN Business Registration ID in France).  This is the strongest identifier and will break matches between companies that might otherwise resolve.
+
+3. Map to the TAX_ID feature attributes when the identifier type indicates it is issued by a country and used to collect taxes. (e.g., VAT Number in many countries, EIN or Federal Tax ID in the US),  It is the second strongest identifier and will break matches unless another strong feature confirms it.
+
+4. Optionally, you can map to both NATIONAL_ID and TAX_ID feature attributes if it qualifies as both. You may want to do this if all of your data sources don't follow this specification and you continually find the same value mapped two different ways.
+
+5. Known identifiers not issued by a country, that are used a lot, are candidates for having a new feature created for them.  (e.g., MEDICARE_ID in data source about patients)
+
+6. Only map to OTHER_ID feature attributes when it is a known identifier not issued by a country that you don't want to create a feature for.  Always map the source id_type to the OTHER_ID_TYPE attribute to prevent overmatching as the country of the issuer is not always known or its international/
+
+7. Do not map the source id_type to NATIONAL_ID_TYPE or TAX_ID_TYPE when country is known to prevent undermatching due to different codification standards.
+
+8. Map all identifiers that aren't mapped by any of these rules as Payload Attributes so that you have visibility to them as you look them up in Senzing.  Through time, you may discover what they are and decide to map them 
 
 ## Mapping Relationships
 
@@ -303,9 +321,9 @@ Senzing always replaces records rather than keep any prior values as history. Th
 2. Many source systems already keep such history, so be sure to map those to Senzing as well.  
 3. If there is not a history table in the source, you can keep a simple table of your own with at least these fields: DATA_SOURCE, RECORD_ID,  FEATURE type, and the feature JSON that you want to keep as history.  Later when you are creating JSON from the new record, you can see if there are prior features for that record that you want to include.
 
-# Dictionary of pre-configured attributes
+# Dictionary of Pre-configured Attributes
 
-## Attributes for the record key
+## Attributes for the Record Key
 
 These attributes are required to tie records in Senzing back to the source.  They must be placed at the root level in the JSON document.
 
@@ -316,8 +334,7 @@ These attributes are required to tie records in Senzing back to the source.  The
 
 ### **Mapping Rules for (Attributes for the record key)**
 
-1. DATA_SOURCE is required and should be a simple code describing the type of entities in it. For instance a set of customer records coule simply be assigned the code CUSTOMERS. If you have two customer sources, you must be more specific.  For instance, BANKING_CUSTOMERS and MORTGAGE_CUSTOMERS.
-
+1. DATA_SOURCE is required and should be a simple code describing the type of entities in it. For instance a set of customer records could simply be assigned the code CUSTOMERS. If you have two customer sources, you must be more specific.  For instance, BANKING_CUSTOMERS and MORTGAGE_CUSTOMERS.
 
 2. Always look for a unique or primary key for the source record to map to RECORD_ID.  While you can, you do not also have to map this value to a feature.  Records in Senzing can always be retreived by DATA_SOURCE and RECORD_ID with a "get" call in the Senzing SDK.
 
