@@ -51,7 +51,7 @@ Entity resolution works best when you have a name and one or more of the desired
 
 ## Payload Attributes
 
-The use of payload attributes is optional.  In fact, it adds procssessing time and disk storage that strictly speaking isn't necessary for Entity Resolution.  
+The use of payload attributes is optional.  In fact, it adds processing time and disk storage that strictly speaking isn't necessary for Entity Resolution.  
 
 However, mapping a few key dates, statuses, and categories can help you quickly understand a match.  For instance:
   - If a duplicate customer was found, are they both active?  Which customer record came first? 
@@ -62,7 +62,7 @@ Think of Senzing as a pointer system to where you can find a person or company i
 
 # Examples of Senzing JSON
 
-In prior versions we recommended a flat JSON structure with a separate sublist for each feature that had multiple values.  While we still support that, we now recommend the following JSON structure that has just one list for all features.  It is much cleaner and if you standardize on it, you can write one parser to pull values back out of it if needed by downstream processes.
+In prior versions we recommended a flat JSON structure with a separate sublist for each feature that had multiple values. While we still support that, we now recommend the following JSON structure that has just one list for all features. It is much cleaner, and if you standardize on it, you can write a single parser to extract values for downstream processes if needed.
 
 ## Recommended JSON Structure
 
@@ -199,7 +199,7 @@ We still support flat JSON which can be tempting when the source data is flat. J
 }
 ```
 
-In this case the flat source record likely had a set of fields for a home address and another set for a mailing address.  The address type can be derived from source field's name and used as a prefix for each set of address attributes.  This is necessary because attributes at the same level must be unique.  The Senzing parser will assign this prefix to the features's usage type field.  In the above case HOME and MAILING will become ADDR_TYPEs.
+In this case the flat source record likely had a set of fields for a home address and another set for a mailing address. The address type can be derived from the source field's name and used as a prefix for each set of address attributes. This is necessary because attributes at the same level must be unique. The Senzing parser will assign this prefix to the feature's usage type field. In the above case, HOME and MAILING will become ADDR_TYPEs.
 
 ### **Mapping Rules (for Flat JSON Structure)**
 1. If you have to use a prefix, it must be a single token with no punctuation for the Senzing parser to recognize it.
@@ -248,7 +248,7 @@ There are certain features that source records may have more than one of.  Most 
 
 - Some data sources have fieldnames like NICKNAME, MAILING_ADDR, and HOME_PHONE.  You can derive the type from the source fieldname.  
 
-- Some data sources have a sublist of names, addresses, and/or phone numbers each with their own type field.  Trying to standarize those types across data sources is difficult at best.  You can map these as is if you like, but it is a good idea to truncate them to 50 characters as they can be a comma delimited list and be quite long.  
+- Some data sources have a sublist of names, addresses, and/or phone numbers each with their own type field. Trying to standardize those types across data sources is difficult at best. You can map these as-is if you like, but it is a good idea to truncate them to 50 characters, as they can be a comma-delimited list and be quite long.  
 
 Senzing always matches features across these types for the following reasons:
 - Some sources don't even specify the type.
@@ -263,7 +263,7 @@ That being said there are three usage types that do have meaning in Senzing.  Th
 
 - The ADDR_TYPE: "BUSINESS" should be assigned to the physical location of an organization.  This adds weight to the address and helps break matches between chains where everything is the same except the address. People often move, companies rarely change physical locations.  
 
-- The PHONE_TYPE: "MOBILE" can be assigned to add weight to the mobile or cell phone.  All the members of a household may report the same home phone.  But people don;t normally share their cell phone number.
+- The PHONE_TYPE: "MOBILE" can be assigned to add weight to the mobile or cell phone.  All the members of a household may report the same home phone.  But people don't normally share their cell phone number.
 
 ### **Mapping Rules (for Feature Usage Types)**
 
@@ -296,7 +296,7 @@ When there is a sublist of identifiers, there may be 3 fields:
 - the id_number field
 - an id_country: can be a country, state or province.  When this is missing, it may be part of the id_type (e.g., AUS-PASSPORT, RU-INN).
 
-There are many different identifier types and different sources don't follow the same codification standandards. For instance "EIN" and "FEIN" may both used as the type for the US Employer Identification Number used for Tax purposes.  Mapping to one of the Senzing features is the way to standardize them so they can be matched.
+There are many different identifier types and different sources don't follow the same codification standards. For instance "EIN" and "FEIN" may both be used as the type for the US Employer Identification Number used for Tax purposes.  Mapping to one of the Senzing features is the way to standardize them so they can be matched.
 
 Sometimes the only way to know what type of identifier it is to look it up on the internet.  You are trying to determine:
 1. If it is truly an identifier.  Sometimes data sources use this as a dumping ground for other kinds of information such as industry classification codes like "NAICS" or even "registration date".  You might even find "phone number" as a type which of course should be mapped to the PHONE feature.
@@ -316,9 +316,9 @@ There are 3 non-specific identifier features: They are: NATIONAL_ID, TAX_ID and 
 
 5. Known identifiers not issued by a country, that are used a lot, are candidates for having a new feature created for them.  (e.g., MEDICARE_ID in data source about patients)
 
-6. Only map to OTHER_ID feature attributes when it is a known identifier not issued by a country that you don't want to create a feature for.  Always map the source id_type to the OTHER_ID_TYPE attribute to prevent overmatching as the country of the issuer is not always known or its international/
+6. Only map to OTHER_ID feature attributes when it is a known identifier not issued by a country that you don't want to create a feature for.  Always map the source id_type to the OTHER_ID_TYPE attribute to prevent over-matching as the country of the issuer is not always known or its international/
 
-7. Do not map the source id_type to NATIONAL_ID_TYPE or TAX_ID_TYPE when country is known to prevent undermatching due to different codification standards.
+7. Do not map the source id_type to NATIONAL_ID_TYPE or TAX_ID_TYPE when country is known to prevent under-matching due to different codification standards.
 
 8. Map all identifiers that aren't mapped by any of these rules as Payload Attributes so that you have visibility to them as you look them up in Senzing.  Through time, you may discover what they are and decide to map them 
 
@@ -379,7 +379,7 @@ These attributes are required to tie records in Senzing back to the source.  The
 
 1. DATA_SOURCE is required and should be a simple code describing the type of entities in it. For instance a set of customer records could simply be assigned the code CUSTOMERS. If you have two customer sources, you must be more specific.  For instance, BANKING_CUSTOMERS and MORTGAGE_CUSTOMERS.
 
-2. Always look for a unique or primary key for the source record to map to RECORD_ID.  While you can, you do not also have to map this value to a feature.  Records in Senzing can always be retreived by DATA_SOURCE and RECORD_ID with a "get" call in the Senzing SDK.
+2. Always look for a unique or primary key for the source record to map to RECORD_ID.  While you can, you do not also have to map this value to a feature.  Records in Senzing can always be retrieved by DATA_SOURCE and RECORD_ID with a "get" call in the Senzing SDK.
 
 3. If there is not a primary key for the source record, you *should* create one by computing a hash of the source values you mapped to Senzing JSON using: SHA1, MD5, etc. Ideally, you stamp this hash on your source record as well.
 
@@ -481,7 +481,7 @@ There are three ways to map names:
 
 4. Sometimes there is both a person name and an organization name on a record, such as a contact list where you have the person and who they work for. In this case you would map the person's name as shown above. But the name of the organization they work for should be mapped as **EMPLOYER_NAME**.  See the section on [Group Associations](#group-associations).
 
-5. Sometimes there are name fields that don't actually belong to the entity the record is for.  Whenever there are multiple names, you have to decide which ones actually belongs to that entity and which ones belong to people they are related to.  You can decide base on the source field name or the source name type value if the names are in a sublist. Terms like alias, aka, and DBA belong to that entity.  Terms like: parent_name, child_name, employer name, etc belong to people they are related to and should be mapped as payload.
+5. Sometimes there are name fields that don't actually belong to the entity the record is for. Whenever there are multiple names, you have to decide which ones actually belong to that entity and which ones belong to people they are related to. You can decide based on the source field name or the source name type value if the names are in a sublist. Terms like alias, aka, and DBA belong to that entity. Terms like: parent_name, child_name, employer name, etc. belong to people they are related to and should be mapped as payload.
 
 ## Addresses
 
@@ -561,19 +561,19 @@ There are two ways to map addresses:
 
 | Attribute | Type | Example | Notes |
 | --- | --- | --- | --- | 
-| PLACE_OF_BIRTH | String | US | This is where the person was born. Ideally it is a country name or code. However, it often contain city names as well. |
+| PLACE_OF_BIRTH | String | US | This is where the person was born. Ideally it is a country name or code. However, it often contains city names as well. |
 
 ### Feature: REGISTRATION_DATE
 
 | Attribute | Type | Example | Notes |
 | --- | --- | --- | --- | 
-| REGISTRATION_DATE | String | 2010-05-14 | This is the date the organization was registered, like date of birth is to a person. |
+| REGISTRATION_DATE | String | 2010-05-14 | This is the date the organization was registered, like the date of birth is to a person. |
 
 ### Feature: REGISTRATION_COUNTRY
 
 | Attribute | Type | Example | Notes |
 | --- | --- | --- | --- | 
-| REGISTRATION_COUNTRY | String | US | This is the country the organization was registered in, like place of birth is to a person. |
+| REGISTRATION_COUNTRY | String | US | This is the country the organization was registered in, like the place of birth is to a person. |
 
 ## Identifiers
 
@@ -737,7 +737,7 @@ Groups a person belongs to can also be useful for resolving entities. Consider t
 
 Some data sources keep track of known relationships between entities. Look for a table within the source system that defines such relationships and include them here.
 
-A relationship can either be unidirectional where one record points to the other or bidirectional where they each point to the other.
+A relationship can either be unidirectional, where one record points to the other, or bidirectional, where they each point to the other.
 
 ![Screenshot](images/ges-image3-relationship.png)
 
