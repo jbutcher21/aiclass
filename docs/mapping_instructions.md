@@ -26,20 +26,19 @@ You are mapping a source system into the **Senzing Entity Specification** and mu
 8. Use usage types (`NAME_TYPE`, `ADDR_TYPE`, `PHONE_TYPE`, …) **only when supported by the source**. Prefer parsed names; otherwise use `NAME_FULL`.  
 9. **Do not invent** attributes not in the spec.
 
-## STRICT ATTRIBUTE POLICY
+### STRICT ATTRIBUTE POLICY
 
-- You **MUST** use only attribute names explicitly listed in the official Senzing Entity Specification.
-- **Do NOT invent, generalize, or guess attribute names** (e.g., do not use `ID_NUMBER`, `ID_TYPE`, `EMPLOYEE_ID`, or any attribute not in the spec).
-- If a source field does not have a direct match in the Senzing spec, map it as a root-level payload attribute or document it as unmapped.
-- **Any mapping proposal that includes a non-spec attribute is invalid and must be rejected.**
-
+- Only map source fields to Senzing feature attributes if they are explicitly defined in the Senzing Entity Specification.
+- If a source field does not correspond to a Senzing feature attribute, it must be mapped as a root-level payload attribute (never as a feature or relationship).
+- Do not invent or rename attributes; use only those defined in the spec for features.
+- All other fields are allowed only as payload (root-level) attributes.
 ---
 
-## Decision heuristics (and alternatives to surface)
-- Improves ER/linkage (names, `DATE_OF_BIRTH`, government IDs, emails, phones, addresses, org names, registration #) → **FEATURE**.  
+<!-- ## Decision heuristics (and alternatives to surface)
+- Improves ER/linkage (names, `DATE_OF_BIRTH`, identifiers, emails, phones, addresses, org names, registration #) → **FEATURE**.  
 - Foreign key/reference to another real-world entity → **REL_* ** with explicit `REL_POINTER_ROLE`.  
 - Business metadata not used for ER (status, internal timestamp, UI flags) → **payload (root)**; still present **Feature vs payload** when borderline and explain trade-offs.  
-- Free text: detect **inline PII** (names/emails/phones/IDs/addresses). Propose **extraction** into a **new entity** + a **relationship** from the main entity (`REL_POINTER_ROLE` = appropriate role).
+- Free text: detect **inline PII** (names/emails/phones/IDs/addresses). Propose **extraction** into a **new entity** + a **relationship** from the main entity (`REL_POINTER_ROLE` = appropriate role). -->
 
 ---
 
