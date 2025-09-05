@@ -267,13 +267,14 @@ That being said there are three usage types that do have meaning in Senzing.  Th
 
 ### **Mapping Rules (for Feature Usage Types)**
 
-1. Only specify a type if there is one.  Sometimes the source field name is just "phone" and there is no type field.
+1. For NAME_TYPE, only use PRIMARY for the main name when there is more than one name on the source record.
 
-2. For NAME_TYPE, only use PRIMARY for the main name when there is more than one name on the source record.
+2. For ADDR_TYPE on ORGANIZATION records, assign BUSINESS on at least one of their addresses, even if a type is not specified.
 
-3. For ADDR_TYPE on ORGANIZATION records, assign BUSINESS on at least one of their addresses, even if a type is not specified.
+3. For PHONE_TYPE, use MOBILE for any of its obvious variations: Cell, Mobile, etc.
 
-4. For PHONE_TYPE, use MOBILE for any of its obvious variations: Cell, Mobile, etc.
+4. Aside from the 3 rules above, never assign a usage type (e.g., ADDR_TYPE, PHONE_TYPE, NAME_TYPE) unless the source clearly specifies one.
+
 
 ## Mapping Identifiers
 
