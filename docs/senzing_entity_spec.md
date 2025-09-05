@@ -304,9 +304,9 @@ Sometimes the only way to know what type of identifier it is to look it up on th
 
 ### **Mapping Rules (for Mapping Identifiers)**
 
-There are 3 non-specific identifier features: They are: NATIONAL_ID, TAX_ID and OTHER_ID.  All other features in the identifier sections (e.g., PASSPORT, SSN, LEI_NUMBER) should be considered specific features.
+There are 3 generic identifier features: They are: NATIONAL_ID, TAX_ID and OTHER_ID.  All other features in the identifier sections (e.g., PASSPORT, SSN, LEI_NUMBER) should be considered specific features.
 
-1. Map to the the specific feature attributes when the source field or id_type indicates it is one of those.
+1. Always map source identifiers to the most specific Senzing feature available (e.g., `SSN`, `PASSPORT`, `DRLIC`) before using generic features like `NATIONAL_ID`.  Do not use `NATIONAL_ID` for SSNs, passports, or other identifiers that have a specific feature in the spec.
 
 2. Map to the NATIONAL_ID feature attributes when the identifier type indicates it is issued by a country and the entity is usually only ever issued one.  (e.g., National Corporate ID in Japan, Companies House Registration Number in the UK, SIREN Business Registration ID in France).  This is the strongest identifier and will break matches between companies that might otherwise resolve.
 
