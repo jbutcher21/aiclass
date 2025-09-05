@@ -341,7 +341,7 @@ There are two scenarios you may find on source records that seemingly only conta
 
 ### **Mapping Rules (for Relationships)**
 
-1. **Always** check for and map relationships between entities.
+1. **Always** analyze the schema for possible relationship fields or schemas and explicitly suggest how to map them as Senzing relationships, even if they are not obvious."
 
 2. **Always** map the relationship as if it will be unidirectional.  You will need to decide which entity record to point to the other.   Usually, but not always, the primary entity the source record is about points to the other entity or entities.
 
