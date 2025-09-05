@@ -15,7 +15,7 @@ C) **Sample Senzing JSON** that follows the spec exactly
 2. Use **one** sublist named **FEATURES** for all features.  
 3. Put all **payload attributes at the root level** (do **not** create a `PAYLOAD` object).  
 4. Do **not** emit arrays of feature values—if multiple values exist, create **multiple feature objects**.  
-5. Use only defined feature/attribute names from the spec (e.g., `RECORD_TYPE`, `NAME_FIRST`, `NAME_LAST`, `NAME_FULL`, `DATE_OF_BIRTH`, `ADDR_*`, `PHONE_TYPE`, `PHONE_NUMBER`, `EMAIL_ADDRESS`, government IDs, etc.).  
+5. Use only defined feature/attribute names from the spec (e.g., `RECORD_TYPE`, `NAME_FIRST`, `NAME_LAST`, `NAME_FULL`, `DATE_OF_BIRTH`, `ADDR_*`, `PHONE_TYPE`, `PHONE_NUMBER`, `EMAIL_ADDRESS`, etc.).  
 6. Relationships use **REL_ANCHOR_DOMAIN** + **REL_ANCHOR_KEY** (current record) and **REL_POINTER_DOMAIN** + **REL_POINTER_KEY** + **REL_POINTER_ROLE** (related record).  
 7. **Usage types** (e.g., `NAME_TYPE`, `ADDR_TYPE`, `PHONE_TYPE`) only when justified by the source.  
 8. Prefer parsed names when available; else `NAME_FULL`.  

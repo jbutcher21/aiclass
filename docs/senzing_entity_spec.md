@@ -40,7 +40,7 @@ Entity resolution works best when you have a name and one or more of the desired
 ## Desired Features For Organizations
 - All names
 - Tax ID numbers
-- Any ID numbers assigned by governments, agencies, or data providers
+- Any ID numbers assigned by countries, states, agencies, or data providers
 - Physical and mailing addresses
 - All phone numbers
 - Website and social media handles
@@ -327,9 +327,10 @@ There are 3 non-specific identifier features: They are: NATIONAL_ID, TAX_ID and 
 There are two scenarios you may find on source records that seemingly only contain one entity.
 
 1. Look for fields that reference other entities by their ID.  
-    - Organization records may have fields that indicate a corporate hierarchy (e.g., PARENT_ID, CHILD_ID)
-    These relationships should become REL_POINTERS and the REL_POINTER_ROLE can be derived from the source field name.
-    - Person records may have fields like: company_id or employer_id and job title.  
+    - Organization records may have fields that indicate a corporate hierarchy. (e.g., PARENT_ID, CHILD_ID)
+    - Person records may have fields that indicate relationships to companies or other persons.  ()
+    
+    may have fields like: company_id or employer_id and job title.  
     - These should all be mapped as a REL_POINTERs if the other ID of the related record is also going to be mapped to Senzing.  Otherwise these should be mapped as payload.
 
 2. Sometimes the source record contains multiple values about the referenced entity, but no key.  
