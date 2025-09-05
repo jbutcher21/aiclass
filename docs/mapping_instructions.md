@@ -26,6 +26,13 @@ You are mapping a source system into the **Senzing Entity Specification** and mu
 8. Use usage types (`NAME_TYPE`, `ADDR_TYPE`, `PHONE_TYPE`, …) **only when supported by the source**. Prefer parsed names; otherwise use `NAME_FULL`.  
 9. **Do not invent** attributes not in the spec.
 
+## STRICT ATTRIBUTE POLICY
+
+- You **MUST** use only attribute names explicitly listed in the official Senzing Entity Specification.
+- **Do NOT invent, generalize, or guess attribute names** (e.g., do not use `ID_NUMBER`, `ID_TYPE`, `EMPLOYEE_ID`, or any attribute not in the spec).
+- If a source field does not have a direct match in the Senzing spec, map it as a root-level payload attribute or document it as unmapped.
+- **Any mapping proposal that includes a non-spec attribute is invalid and must be rejected.**
+
 ---
 
 ## Decision heuristics (and alternatives to surface)
