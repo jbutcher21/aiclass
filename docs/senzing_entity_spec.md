@@ -115,11 +115,14 @@ In prior versions we recommended a flat JSON structure with a separate sub-list 
 }
 ```
 
-### **Mapping Rules (for Recommended JSON Structure)**
-1. DATA_SOURCE and RECORD_ID must be at the root level and DATA_SOURCE is required.
-2. There should only be one top level JSON array named FEATURES that contains all mapped features.
-3. All **Payload Attributes** should be placed at the root level.
-4. 
+### **Mapping Rules**
+1. Root contains `DATA_SOURCE` (string), optional `RECORD_ID` (string), and a single `FEATURES` array.
+2. All feature instances appear as separate flat objects inside `FEATURES`.
+3. No arrays/objects at root other than `FEATURES` (payload must be scalars using source field names).
+4. At least one `FEATURES` object contains `RECORD_TYPE`.
+5. Only canonical feature attributes from the spec are allowed (e.g., `NAME_FIRST`, `ADDR_LINE1`, `PHONE_NUMBER`, `SSN_NUMBER`, `DRIVERS_LICENSE_NUMBER`, etc.).
+6. No mixing of different feature families in a single `FEATURES` object.
+
 
 ## Flat JSON Structure
 
