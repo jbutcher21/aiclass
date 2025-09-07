@@ -55,7 +55,7 @@ Think of Senzing as a pointer system to where you can find a person or company i
 
 # Examples of Senzing JSON
 
-In prior versions we recommended a flat JSON structure with a separate sublist for each feature that had multiple values. While we still support that, we now recommend the following JSON structure that has just one list for all features. It is much cleaner, and if you standardize on it, you can write a single parser to extract values for downstream processes if needed.
+In prior versions we recommended a flat JSON structure with a separate sub-list for each feature that had multiple values. While we still support that, we now recommend the following JSON structure that has just one list for all features. It is much cleaner, and if you standardize on it, you can write a single parser to extract values for downstream processes if needed.
 
 ## Recommended JSON Structure
 
@@ -117,51 +117,9 @@ In prior versions we recommended a flat JSON structure with a separate sublist f
 
 ### **Mapping Rules (for Recommended JSON Structure)**
 1. DATA_SOURCE and RECORD_ID must be at the root level and DATA_SOURCE is required.
-2. There should only be one sublist named FEATURES that contains all mapped features.
+2. There should only be one top level JSON array named FEATURES that contains all mapped features.
 3. All **Payload Attributes** should be placed at the root level.
-4. Because a feature in Senzing *can* have multiple attributes, you cannot supply a JSON list even if there is only one.
-
-#### Examples
-
-##### ✅ Correct JSON
-```json
-{
-    "DATA_SOURCE": "CUSTOMERS",
-    "RECORD_ID": "1001",
-    "FEATURES":
-    [
-        {
-            "PHONE_TYPE": "WORK",
-            "PHONE_NUMBER": "800-101-1111"
-        },
-        {
-            "PHONE_TYPE": "MOBILE",
-            "PHONE_NUMBER": "702-202-2222"
-        }
-    ],
-    "CUSTOMER_SINCE": "06/15/2020",
-    "STATUS": "Active"
-}
-
-##### ❌ Incorrect JSON
-```json
-{
-    "FEATURES":
-    [
-        {
-            "PHONE_NUMBER":  // ❌ Do not use a list structure for multiple attributes
-            [
-                "800-101-1111",
-                "800-202-2222"
-            ]
-        }
-    ],
-    "PAYLOAD": { // ❌ Do not nest payload attributes inside another object
-        "CUSTOMER_SINCE": "06/15/2020",
-        "STATUS": "Active"
-    }
-}
-```
+4. 
 
 ## Flat JSON Structure
 
@@ -241,7 +199,7 @@ There are certain features that source records may have more than one of.  Most 
 
 - Some data sources have fieldnames like NICKNAME, MAILING_ADDR, and HOME_PHONE.  You can derive the type from the source fieldname.  
 
-- Some data sources have a sublist of names, addresses, and/or phone numbers each with their own type field. Trying to standardize those types across data sources is difficult at best. You can map these as-is if you like, but it is a good idea to truncate them to 50 characters, as they can be a comma-delimited list and be quite long.  
+- Some data sources have a sub-list of names, addresses, and/or phone numbers each with their own type field. Trying to standardize those types across data sources is difficult at best. You can map these as-is if you like, but it is a good idea to truncate them to 50 characters, as they can be a comma-delimited list and be quite long.  
 
 Senzing always matches features across these types for the following reasons:
 - Some sources don't even specify the type.
@@ -271,7 +229,7 @@ That being said there are three usage types that do have meaning in Senzing.  Th
 
 ## Mapping Identifiers
 
-Some data sources have fields named SSN, DL_NUM, PASSPRT, etc.  This is a simple field name mapping to the appropriate Senzing feature.  Other data sources, especially data providers, have a sublist of identifiers with an identifier type that can be used to determine the appropriate Senzing feature.
+Some data sources have fields named SSN, DL_NUM, PASSPRT, etc.  This is a simple field name mapping to the appropriate Senzing feature.  Other data sources, especially data providers, have a sub-list of identifiers with an identifier type that can be used to determine the appropriate Senzing feature.
 
 ### **Mapping Guidance (for Mapping Identifiers)**
 
@@ -282,9 +240,9 @@ When mapping from a source field name, always look for and map the corresponding
 - state or country for a drivers license
 - country for a national_id or a tax_id
 
-#### Mapping from a Sublist of Identifiers
+#### Mapping from a Sub-list of Identifiers
 
-When there is a sublist of identifiers, there may be 3 fields:
+When there is a sub-list of identifiers, there may be 3 fields:
 - an id_type field such as: PASSPORT, DRIVERS_LICENSE, SSN, EIN, TIN, VAT, CEDULA, SIREN, CUI, NIT. 
 - the id_number field
 - an id_country: can be a country, state or province.  When this is missing, it may be part of the id_type (e.g., AUS-PASSPORT, RU-INN).
@@ -474,7 +432,7 @@ There are three ways to map names:
 
 4. Sometimes there is both a person name and an organization name on a record, such as a contact list where you have the person and who they work for. In this case you would map the person's name as shown above. But the name of the organization they work for should be mapped as **EMPLOYER_NAME**.  See the section on [Group Associations](#group-associations).
 
-5. Sometimes there are name fields that don't actually belong to the entity the record is for. Whenever there are multiple names, you have to decide which ones actually belong to that entity and which ones belong to people they are related to. You can decide based on the source field name or the source name type value if the names are in a sublist. Terms like alias, aka, and DBA belong to that entity. Terms like: parent_name, child_name, employer name, etc. belong to people they are related to and should be mapped as payload.
+5. Sometimes there are name fields that don't actually belong to the entity the record is for. Whenever there are multiple names, you have to decide which ones actually belong to that entity and which ones belong to people they are related to. You can decide based on the source field name or the source name type value if the names are in a sub-list. Terms like alias, aka, and DBA belong to that entity. Terms like: parent_name, child_name, employer name, etc. belong to people they are related to and should be mapped as payload.
 
 ## Addresses
 

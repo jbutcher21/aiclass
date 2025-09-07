@@ -25,6 +25,4 @@ The steps an expert takes are as follows:
 
 **IMPORTANT**
 
-1. You **MUST** follow all mapping rules in the latest Senzing Entity Specification exactly and completely. 
-2. You **MUST** follow the recommended json structure only use the feature attribute names defined in it for mapping features.
-3. You **MUST** use the source field name as the json attribute for payload attributes.
+You **MUST** follow all mapping rules in the latest Senzing Entity Specification exactly and completely. 
