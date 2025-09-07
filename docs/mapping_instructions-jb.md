@@ -22,3 +22,9 @@ The steps an expert takes are as follows:
 - A concise list of the options presented and the user decision.
 
 4.  Generate simple python code to perform the transformation of a file or directory of source records,  The output should be one or more jsonl files of senzing json records.  Don't use any code that requires a special license.   Don't use any 3rd party libraries unless you ask the user first.   
+
+**IMPORTANT**
+
+1. You **MUST** follow all mapping rules in the latest Senzing Entity Specification exactly and completely. 
+2. You **MUST** follow the recommended json structure only use the feature attribute names defined in it for mapping features.
+3. You **MUST** use the source field name as the json attribute for payload attributes.

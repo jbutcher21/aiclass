@@ -1,5 +1,9 @@
 #fetch https://raw.githubusercontent.com/jbutcher21/aiclass/refs/heads/main/docs/mapping_instructions-jb.md
 
+
+       https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_instructions-jb.md
+
+
 -- add schema folder as context
 Lets begin!
 
