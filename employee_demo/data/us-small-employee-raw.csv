@@ -1,4 +1,4 @@
-emp_num,last_name,first_name,middle_name,addr1,city,state,postal_code,home_phone,dob,ssn,job_category,job_title,hire_date,salary,rehire_flag,employer_name,employer_addr,other_id_type,other_id_number,other_id_country,manager_id,sherrifs_card
+emp_num,last_name,first_name,middle_name,addr1,city,state,zip,home_phone,dob,ssn,job_category,job_title,hire_date,salary,rehire_flag,employer_name,employer_addr,id_type,id_number,id_country,manager_id,sherrifs_card
 1,Sheehan,Jamie,H,2280 Stoney Lonesome Road,Pittston,PA,18640,570-300-5826,4/13/69,189-50-0966,key executive,President,1/10/10,50k,null,ABC Company,"111 First St, anytown USA",DL,N9123912,NV,,
 2,Mcpherson,Kimberly,J,3483 Alpaca Way,Anaheim,CA,92806,714-762-0551,10/13/70,624-43-3201,key executive,President and CEO ,2/20/12,100k,null,ABC Company,"111 First St, anytown USA",DL,N676555,NV,1,
 3,Spector,Oscar,A,4110 Smith Street,Holden,MA,1520,508-829-6577,8/5/57,034-28-9551,former executive,Vice president of marketing division (former),3/13/13,75k,null,ABC Company,"111 First St, anytown USA",PP,123234568,US,1,
