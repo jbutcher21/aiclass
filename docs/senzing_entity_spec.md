@@ -1,10 +1,3 @@
----
-title: "Senzing Entity Specification"
-linkTitle: "Entity Specification"
-weight: 15
-no_list: true
----
-
 This document defines the Senzing Entity Specification — a detailed guide for mapping source data into Senzing’s entity resolution engine. 
 
 The process of mapping is taking a source field name, like CustomerName, and transforming it into a target field name, by applying specific rules, such as renaming, reformatting, or combining fields based on predefined logic or conditions. It’s like creating a bridge where data from one system is reshaped to fit the structure of another system, guided by those rules.
