@@ -282,15 +282,13 @@ There are two scenarios you may find on source records that seemingly only conta
 
 1. Look for fields that reference other entities by their ID.  
     - Organization records may have fields that indicate a corporate hierarchy. (e.g., PARENT_ID, CHILD_ID)
-    - Person records may have fields that indicate relationships to companies or other persons.  ()
-    
-    may have fields like: company_id or employer_id and job title.  
+    - Person records may have fields that indicate relationships to companies or other persons.  (e.g. COMPANY_ID, EMPLOYER_ID)
     - These should all be mapped as a REL_POINTERs if the other ID of the related record is also going to be mapped to Senzing.  Otherwise these should be mapped as payload.
 
 2. Sometimes the source record contains multiple values about the referenced entity, but no key.  
     - For example, a contact list has the contact and the company they work for.  If there are enough features about the company, see [What Features to Map](#what-features-to-map), it should be mapped as its own entity and related back to the contact. 
     - This can also happen on transactions such as a wire transfers where the sender and receiver contain features but no reliable unique ID.
-    - When you do create an entity like this, there will be no unique ID to map to, so use a hash of its features as RECORD_ID. 
+    - When you do create an entity like this, there will be no unique ID to map to, construct a deterministic RECORD_ID by hashing a normalized concatenation of its identifying attributes.
     - This will likely create many duplicate records.  If this is a large data source, the duplicates should be removed from the resulting output.
 
 3. For multi-schema data sources, look for a relationship schema that has fields like id1, id2 and a relationship type or role. Relationships **MUST** be considered a child schema for source entity based on whatever the id1 field is.
@@ -332,10 +330,8 @@ These attributes are required to tie records in Senzing back to the source.  The
 ### **Mapping Rules for (Attributes for the record key)**
 
 1. DATA_SOURCE is required and should be a simple code describing the type of entities in it. For instance a set of customer records could simply be assigned the code CUSTOMERS. If you have two customer sources, you must be more specific.  For instance, BANKING_CUSTOMERS and MORTGAGE_CUSTOMERS.
-
 2. Always look for a unique or primary key for the source record to map to RECORD_ID.  While you can, you do not also have to map this value to a feature.  Records in Senzing can always be retrieved by DATA_SOURCE and RECORD_ID with a "get" call in the Senzing SDK.
-
-3. If there is not a primary key for the source record, you *should* create one by computing a hash of the source values you mapped to Senzing JSON using: SHA1, MD5, etc. Ideally, you stamp this hash on your source record as well.
+3. If there is not a primary key for the source record, construct a deterministic RECORD_ID by hashing a normalized concatenation of its identifying attributes.
 
 ### **Mapping Guidance for (RECORD_ID)**
 
