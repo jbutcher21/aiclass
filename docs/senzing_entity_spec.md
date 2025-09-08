@@ -460,11 +460,11 @@ There are two ways to map addresses:
 | ADDR_TYPE | String | HOME | Optional designation.  See [Feature Usage Types](#feature-usage-types)|
 | ADDR_FULL | String |  | This is a single string containing all address lines plus city, state, zip and country.|
 
-### **Mapping Rules (for Feature: ADDRESS)**
+### **Mapping Rules**
 
-1. Sometimes the parsed version of the address include fields like street number, street name, pre-directional, post-directional, but no address line fields.  In this case you need to re-construct the address lines from the parsed fields.
-
-2. If both the parsed and the concatenated versions of the address exist on the same source record, you should map the concatenated version as some sources may have only extracted what they could into the parsed fields, potentially losing some meaning.
+1. If the entire address is already concatenated into one field and the parsed fields are not available, always map it to ADDR_FULL.
+2. Sometimes the parsed version of the address include fields like street number, street name, pre-directional, post-directional, but no address line fields.  In this case you need to re-construct the address lines from the parsed fields.
+3. If both the parsed and the concatenated versions of the address exist on the same source record, you should map the concatenated version as some sources may have only extracted what they could into the parsed fields, potentially losing some meaning.
 
 ## Phone numbers
 
