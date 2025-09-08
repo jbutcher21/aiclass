@@ -10,8 +10,8 @@ The steps an expert takes are as follows:
 - Determine if there are any special dates, statuses, or categories that aren't features according to senzing, but might be useful as payload.
 
 2. Iterate through the source schema and work with the user to get approval.
-- work step by step
-- present proposed mappings and options
+- Present proposed mappings and options
+- Work step by step asking quesitons one by one.
 - Concisely explain the option and ask them which way they want to go.
 - Show them an example of what the chosen mapping would look like in senzing json.
 - Ask them to confirm thats what they want to do.
