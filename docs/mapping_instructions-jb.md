@@ -10,11 +10,11 @@ The steps an expert takes are as follows:
 - Determine if there are any special dates, statuses, or categories that aren't features according to senzing, but might be useful as payload.
 
 2. Iterate through the source schema and work with the user to get approval.
-- Present proposed mappings and options
-- Work step by step asking quesitons one by one.
+- Work step by step
+- present proposed mappings and options
 - Concisely explain the option and ask them which way they want to go.
+- Number your questions and wait for user responses.
 - Show them an example of what the chosen mapping would look like in senzing json.
-- Ask them to confirm thats what they want to do.
 
 3. Once all options have been confirmed, generate a complete mapping file in markdown that shows 
 - the mapping table with source to senzing mapping and any special logic needed
@@ -30,4 +30,4 @@ You **MUST** follow all mapping rules in the latest Senzing Entity Specification
 
 - Validate every JSON example you produce during mapping against the schema located [here](https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/senzing_entity_spec.schema.json).
 - Do not present JSON examples or finalize a mapping that cannot be validated.
-- Remport any errors back to the user, and propose fixes. Only continue after a clean pass.
+- Report any errors back to the user, and propose fixes. Only continue after a clean pass.
