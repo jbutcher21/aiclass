@@ -26,7 +26,6 @@ import os
 import sys
 from typing import Any, Dict, List, Tuple
 
-
 SCALAR_TYPES = (str, int, float, bool, type(None))
 
 ALLOWED_ROOT_KEYS = {"DATA_SOURCE", "RECORD_ID", "FEATURES"}
@@ -37,14 +36,29 @@ ALLOWED_ATTRS: Dict[str, set] = {
     "RECORD_TYPE": {"RECORD_TYPE"},
     # Names
     "NAME": {
-        "NAME_TYPE", "NAME_LAST", "NAME_FIRST", "NAME_MIDDLE",
-        "NAME_PREFIX", "NAME_SUFFIX", "NAME_ORG", "NAME_FULL",
+        "NAME_TYPE",
+        "NAME_LAST",
+        "NAME_FIRST",
+        "NAME_MIDDLE",
+        "NAME_PREFIX",
+        "NAME_SUFFIX",
+        "NAME_ORG",
+        "NAME_FULL",
     },
     # Addresses
     "ADDRESS": {
-        "ADDR_TYPE", "ADDR_LINE1", "ADDR_LINE2", "ADDR_LINE3", "ADDR_LINE4",
-        "ADDR_LINE5", "ADDR_LINE6", "ADDR_CITY", "ADDR_STATE",
-        "ADDR_POSTAL_CODE", "ADDR_COUNTRY", "ADDR_FULL",
+        "ADDR_TYPE",
+        "ADDR_LINE1",
+        "ADDR_LINE2",
+        "ADDR_LINE3",
+        "ADDR_LINE4",
+        "ADDR_LINE5",
+        "ADDR_LINE6",
+        "ADDR_CITY",
+        "ADDR_STATE",
+        "ADDR_POSTAL_CODE",
+        "ADDR_COUNTRY",
+        "ADDR_FULL",
     },
     # Contact
     "PHONE": {"PHONE_TYPE", "PHONE_NUMBER"},
@@ -143,7 +157,7 @@ def lint_record(doc: Any, where: str, *, strict: bool = True) -> List[str]:
 
     # FEATURES content
     features = doc.get("FEATURES") if isinstance(doc.get("FEATURES"), list) else []
-
+    seen_rel_anchor = False
     has_record_type = False
     for idx, item in enumerate(features):
         loc = f"{where}#FEATURES[{idx}]"
@@ -157,37 +171,51 @@ def lint_record(doc: Any, where: str, *, strict: bool = True) -> List[str]:
         if "RECORD_TYPE" in item and isinstance(item.get("RECORD_TYPE"), str):
             has_record_type = True
         fams, unknown = feature_families(item)
+        # --- Address Rule ---
+        if "ADDR_FULL" in item:
+            addr_parts = {
+                "ADDR_LINE1",
+                "ADDR_LINE2",
+                "ADDR_LINE3",
+                "ADDR_LINE4",
+                "ADDR_LINE5",
+                "ADDR_LINE6",
+                "ADDR_CITY",
+                "ADDR_STATE",
+                "ADDR_POSTAL_CODE",
+                "ADDR_COUNTRY",
+            }
+            bad_mix = addr_parts & set(item.keys())
+            if bad_mix:
+                errors.append(
+                    f"{loc}: Invalid address mix: ADDR_FULL cannot be combined with parsed fields {sorted(bad_mix)}"
+                )
 
+        # --- Name Rule ---
+        if "NAME_FULL" in item:
+            name_parts = {"NAME_ORG", "NAME_LAST", "NAME_FIRST", "NAME_MIDDLE", "NAME_SUFFIX", "NAME_PREFIX"}
+            bad_mix = name_parts & set(item.keys())
+            if bad_mix:
+                errors.append(
+                    f"{loc}: Invalid name mix: NAME_FULL cannot be combined with parsed fields {sorted(bad_mix)}"
+                )
 
+        # --- Relationship Rules ---
+        if "REL_ANCHOR" in fams:
+            if "REL_ANCHOR_DOMAIN" not in item or "REL_ANCHOR_KEY" not in item:
+                errors.append(f"{loc}: REL_ANCHOR missing REL_ANCHOR_DOMAIN or REL_ANCHOR_KEY")
+            if seen_rel_anchor:
+                errors.append(f"{loc}: Multiple REL_ANCHOR features not allowed")
+            seen_rel_anchor = True
 
+        if "REL_POINTER" in fams:
+            if "REL_POINTER_DOMAIN" not in item or "REL_POINTER_KEY" not in item:
+                errors.append(f"{loc}: REL_POINTER missing REL_POINTER_DOMAIN or REL_POINTER_KEY")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        if ("REL_ANCHOR_DOMAIN" in item or "REL_ANCHOR_KEY" in item) and (
+            "REL_POINTER_DOMAIN" in item or "REL_POINTER_KEY" in item
+        ):
+            errors.append(f"{loc}: Cannot mix REL_ANCHOR and REL_POINTER in same feature")
 
         # Unknown uppercase keys handling
         for u in unknown:
