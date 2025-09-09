@@ -143,6 +143,7 @@ def lint_record(doc: Any, where: str, *, strict: bool = True) -> List[str]:
 
     # FEATURES content
     features = doc.get("FEATURES") if isinstance(doc.get("FEATURES"), list) else []
+
     has_record_type = False
     for idx, item in enumerate(features):
         loc = f"{where}#FEATURES[{idx}]"
@@ -156,6 +157,38 @@ def lint_record(doc: Any, where: str, *, strict: bool = True) -> List[str]:
         if "RECORD_TYPE" in item and isinstance(item.get("RECORD_TYPE"), str):
             has_record_type = True
         fams, unknown = feature_families(item)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         # Unknown uppercase keys handling
         for u in unknown:
             msg = f"{loc}: Unrecognized attribute '{u}' — verify against spec"

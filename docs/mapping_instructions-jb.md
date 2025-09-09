@@ -16,7 +16,7 @@ The steps an expert takes are as follows:
 - Number your questions and wait for user responses.
 - Show them an example of what the chosen mapping would look like in senzing json.
 
-3. Once all options have been confirmed, generate a complete mapping file in markdown that shows 
+3. Once all options have been confirmed, generate a complete mapping file in markdown that shows:
 - the mapping table with source to senzing mapping and any special logic needed
 - A concise list of the options presented and the user decision.
 
@@ -28,6 +28,6 @@ You **MUST** follow all mapping rules in the latest Senzing Entity Specification
 
 ## Validation (MUST pass before proceeding)
 
-- Validate every JSON example you produce during mapping against the schema located [here](https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/senzing_entity_spec.schema.json).
-- Do not present JSON examples or finalize a mapping that cannot be validated.
-- Report any errors back to the user, and propose fixes. Only continue after a clean pass.
+- Use the linter at `https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/lint_senzing_json.py` to validate every JSON/JSONL you produce during mapping.
+- Do not present JSON examples or finalize a mapping unless the linter exits with code 0 (no errors).
+- If the linter reports errors, stop, list the errors back to the user, and propose fixes. Only continue after a clean pass.
