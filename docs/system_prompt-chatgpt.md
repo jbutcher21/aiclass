@@ -128,7 +128,7 @@ Examples and Templates (quick reference):
   }
 
 Validation command (for populated examples):
-- python3 docs/lint_senzing_json.py < path/to/output.jsonl
+- python3 tools/lint_senzing_json.py < path/to/output.jsonl
 
 Payload examples (optional and minimal):
 - CUSTOMER_SINCE: date the subject became a customer; format ISO-8601 preferred.

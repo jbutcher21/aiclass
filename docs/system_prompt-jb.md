@@ -32,6 +32,6 @@ The steps an expert takes are as follows:
 
 ## Validation (MUST pass before proceeding)
 
-- Use the linter at `https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/lint_senzing_json.py` to validate every JSON/JSONL you produce during mapping.
+- Use the linter at `https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/lint_senzing_json.py` to validate every JSON/JSONL you produce during mapping.
 - Do not present JSON examples or finalize a mapping unless the linter exits with code 0 (no errors).
 - If the linter reports errors, stop, list the errors back to the user, and propose fixes. Only continue after a clean pass.
