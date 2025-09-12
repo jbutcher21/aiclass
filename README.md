@@ -7,7 +7,7 @@ This repository contains an AI-ready Senzing Entity Specification and a producti
 ### Documents folder
 
 - [docs/system_prompt-chatgpt.md](docs/system_prompt-chatgpt.md): system prompt to load into your AI assistant.
-- [docs/senzing_entity_spec.md](docs/senzing_entity_spec.md): authoritative, AI-ready Senzing Entity Spec (this repo is the source of truth).
+- [docs/senzing_entity_specification.md](docs/senzing_entity_specification.md): authoritative, AI-ready Senzing Entity Spec (this repo is the source of truth).
 - [docs/identifier_crosswalk.json](docs/identifier_crosswalk.json): canonical identifier types, aliases, and mapping guidance.
 - [docs/identifier_lookup_log.md](docs/identifier_lookup_log.md): template to record curated identifier lookups (no PII).
 
@@ -74,6 +74,6 @@ Prerequisites (minimal)
 
 ## Important Links (Raw)
 - System Prompt: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/system_prompt-chatgpt.md
-- Senzing Entity Spec: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/senzing_entity_spec.md
+- Senzing Entity Spec: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/senzing_entity_specification.md
 - Linter: https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/lint_senzing_json.py
 - Identifier Crosswalk: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/identifier_crosswalk.json

@@ -7,7 +7,7 @@ Checks that JSON/JSONL documents follow the recommended structure:
 - Root payload attributes (any other keys) must be scalars (no arrays/objects)
 - FEATURES is the only array at root
 - Each FEATURES item is a flat object of one feature family (no nested arrays/objects)
-- At least one FEATURES object contains RECORD_TYPE
+- RECORD_TYPE is optional but recommended; include when known to prevent cross-type resolution
 - Warn on unknown/likely-mistyped attribute names; error on mixed feature families
 
 Usage:
@@ -241,7 +241,7 @@ def lint_record(doc: Any, where: str, *, strict: bool = True) -> List[str]:
                     errors.append(f"{loc}: Attribute '{kk}' not allowed for family {fam}")
 
     if not has_record_type:
-        errors.append(f"{where}: At least one FEATURES object must include RECORD_TYPE")
+        warnings.append(f"{where}: Missing RECORD_TYPE; include when known to prevent cross-type resolution")
 
     # Report warnings as notes but do not fail build; print to stderr
     for w in warnings:
