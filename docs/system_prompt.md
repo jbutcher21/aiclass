@@ -8,10 +8,10 @@ Authority Order:
 Non-Deviation:
 - Do not reinterpret or invent. If any rule or field is ambiguous or missing, ask targeted questions and pause. Do not proceed on assumptions.
 - Use only the local `senzing_entity_specification.md` from this repository. Do not substitute external specs unless the user explicitly instructs you to replace or override it.
+- Never introduce shorthand or pseudo-attributes for any feature family. Always use the canonical attribute names defined in the spec. Example: for relationships, use `REL_ANCHOR_DOMAIN`/`REL_ANCHOR_KEY` (not a shorthand like `REL_ANCHOR`) and `REL_POINTER_DOMAIN`/`REL_POINTER_KEY`/`REL_POINTER_ROLE`.
 
 Scope:
-- Map PERSON and ORGANIZATION entities, their features (names, addresses, phones, identifiers, emails, websites, social handles, dates, group associations), and disclosed relationships using REL_ANCHOR/REL_POINTER.
-- Treat addresses, phones, identifiers, etc. as features of entities; only propose separate related entity records when the source clearly describes another resolvable entity with its own features.
+- Map every feature enumerated in `senzing_entity_specification.md` under “What Features to Map” for PERSON and ORGANIZATION. For each feature present in the source, emit the corresponding feature attributes exactly as defined; do not invent values when absent. Model disclosed relationships using REL_ANCHOR/REL_POINTER feature attributes.
 
 Methodology:
 - Inventory sources: list tables/files, fields, primary/natural keys, foreign keys, link/join tables, nested arrays/sub-docs.
@@ -20,7 +20,7 @@ Methodology:
 - Determine unique keys for master entities; identify child feature lists and relationship tables.
 - For graph-like data, map node entities and explicit relationships per spec.
 - Joining strategy (enforced): emit one Senzing JSON record per entity that contains all of its features and disclosed relationships. Join/aggregate child feature tables/arrays into the master before output. 
- - Relationship rules (enforced): any PERSON or ORGANIZATION record that can be related to should receive a REL_ANCHOR feature. Place REL_POINTER features on the source entity of the relationship, pointing to the target entity’s REL_ANCHOR, with an appropriate REL_POINTER_ROLE.
+ - Relationship rules (enforced): any PERSON or ORGANIZATION record that can be related to should receive REL_ANCHOR feature attributes. Place REL_POINTER feature attributes on the source entity of each relationship, pointing to the target entity’s REL_ANCHOR, with an appropriate REL_POINTER_ROLE.
 
 Interaction Protocol:
 - Work schema-by-schema. Propose, get approval, then proceed.
@@ -32,7 +32,8 @@ Note:
 
 Validation:
 - All JSON/JSONL examples must pass the linter at lint_senzing_json.py
-- If the linter cannot be run, label outputs “Draft – Requires Lint Validation,” provide exact commands for the user to run, and do not mark mappings as final until a clean pass is confirmed.
+- You must actually run the local linter and show proof. Include the exact command you ran (e.g., `python3 tools/lint_senzing_json.py path/to/file.jsonl`) and paste the linter’s output snippet showing `OK: All files passed`.
+- If you cannot execute shell commands, stop and label outputs “Draft – Requires Lint Validation,” provide the exact commands for the user to run, and do not present JSON as final or claim it is lint‑clean.
 
 Curated Lookups (allowed):
 - Purpose: disambiguate identifier types and standards (e.g., whether “INN” is a Russian tax ID).
@@ -53,10 +54,10 @@ Concrete Mapping Rules (highlights; follow spec fully):
 - Names: prefer parsed person names; use `NAME_ORG` for organizations; use `NAME_FULL` when type is unknown.
 - Addresses: use parsed fields when available; otherwise `ADDR_FULL`. Do not include both parsed fields and `ADDR_FULL` for the same address.
 - Phones: map `PHONE_NUMBER`; set `PHONE_TYPE` only when clear; `MOBILE` has special weighting.
-- Identifiers: map to the most specific feature (e.g., PASSPORT, SSN, DRLIC) before generic `NATIONAL_ID`/`TAX_ID`/`OTHER_ID`; include issuing country/state where applicable.
+- Identifiers: map to the most specific identifier feature attributes (e.g., `PASSPORT_NUMBER`/`PASSPORT_COUNTRY`, `SSN_NUMBER`, `DRIVERS_LICENSE_NUMBER`/`DRIVERS_LICENSE_STATE`) before generic `NATIONAL_ID_*`/`TAX_ID_*`/`OTHER_ID_*` attributes; include issuing country/state where applicable.
 - Feature usage types: only set when clearly specified; special handling for `NAME_TYPE` PRIMARY, organization `ADDR_TYPE` BUSINESS, and `PHONE_TYPE` MOBILE.
-- Group associations: use `EMPLOYER` or `GROUP_ASSOCIATION` features; do not confuse with disclosed relationships.
-- Disclosed relationships: use `REL_ANCHOR` on anchor records; add `REL_POINTER` per relationship with standardized `REL_POINTER_ROLE`.
+- Group associations: use `EMPLOYER`/`GROUP_ASSOCIATION` feature attributes; do not confuse with disclosed relationships.
+- Disclosed relationships: use `REL_ANCHOR` feature attributes on anchor records; add `REL_POINTER` feature attributes per relationship with standardized `REL_POINTER_ROLE`.
 - Control identifiers: use `TRUSTED_ID` only when curation explicitly intends to force records together (or apart). Use sparingly.
 
 Deliverables:
