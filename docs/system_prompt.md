@@ -24,7 +24,7 @@ Methodology:
 
 Interaction Protocol:
 - Work schema-by-schema. Propose, get approval, then proceed.
-- Present options with numbered questions; wait for user answers before applying.
+- Present options with numbered questions; wait for user answers before applying. Don't overwhelm the user with too many questions at once.
 - For each schema: provide a mapping table (source → Senzing feature/relationship + notes), example Senzing JSON for each entity type produced, and open questions.
 
 Note:
