@@ -10,10 +10,24 @@ This document complements the system prompt. Paste this with your schema as user
 - Phones: map `PHONE_NUMBER`; set `PHONE_TYPE` only when clear; `MOBILE` has special weighting.
 - Identifiers: map to specific features (e.g., PASSPORT, SSN, DRLIC) before generic `NATIONAL_ID`/`TAX_ID`/`OTHER_ID`; include issuing country/state where applicable. `NATIONAL_ID_TYPE` and `TAX_ID_TYPE` may be left blank when the issuer country is mapped and the type is not standardized.
 - Usage types: include only when present in source. Special meanings: `NAME_TYPE=PRIMARY`, org `ADDR_TYPE=BUSINESS`, `PHONE_TYPE=MOBILE`.
-- Group associations vs relationships: use `EMPLOYER`/`GROUP_ASSOCIATION`/`GROUP_ASSN_ID` to aid resolution; use `REL_ANCHOR`/`REL_POINTER` to declare disclosed relationships.
-- Relationship rules: add exactly one `REL_ANCHOR` per record that can be referenced; put `REL_POINTER` on the source of each relationship pointing to the target’s anchor; do not mix anchor/pointer in the same feature object.
+- Group associations vs relationships: use `EMPLOYER`/`GROUP_ASSOCIATION`/`GROUP_ASSN_ID` features to aid resolution; use `REL_ANCHOR/REL_POINTER` features to declare disclosed relationships (see Canonical Relationship Attributes).
+- Relationship rules: add exactly one `REL_ANCHOR` feature attributes object per record that can be referenced; put `REL_POINTER` feature attributes on the source of each relationship pointing to the target’s anchor; do not mix anchor/pointer in the same feature object.
 - Payload: optional; small and non‑PII; not used for matching.
 - Validation: all JSON/JSONL examples must pass the linter before finalizing.
+
+## Deterministic Keys (RECORD_ID and REL_*_KEY)
+- When the source lacks a trustworthy primary key, derive a deterministic key instead of using a label or name.
+- Rule: `RECORD_ID` is the SHA‑256 of the normalized, concatenated values of all mapped feature attribute values for that record (payload). 
+- Alignment: For any record with relationships, set `REL_ANCHOR_KEY` equal to that record’s `RECORD_ID`. Any `REL_POINTER_KEY` that targets it must use the exact same value.
+- Normalization (policy, not code):
+  - Trim, collapse internal whitespace to a single space, and normalize Unicode (e.g., NFKD).
+  - Uppercase; remove punctuation except alphanumerics and spaces.
+  - Build canonical tokens per mapped attribute as `FAMILY.ATTR=value`. For repeated features (e.g., multiple phones), include one token per occurrence. Sort all tokens lexicographically and join with a fixed separator (e.g., `|`) before hashing.
+
+## Canonical Relationship Attributes (No Shorthand)
+- Allowed keys only: `REL_ANCHOR_DOMAIN`, `REL_ANCHOR_KEY`, `REL_POINTER_DOMAIN`, `REL_POINTER_KEY`, `REL_POINTER_ROLE`.
+- Forbidden keys: `REL_ANCHOR`, `REL_POINTER` (these are family names in prose, not attribute names). Do not emit them in JSON.
+- One anchor per record max; any number of pointers allowed. Do not mix anchor and pointer attributes in the same feature object.
 
 ## Note on Embedded Entities
 In single‑schema sources, look for embedded related entities (e.g., employer fields on contacts; sender/receiver in wires). If only a name exists, consider a group association. If resolvable features exist (address, phone, identifiers), consider a separate related entity with a disclosed relationship.
@@ -250,4 +264,3 @@ out = df.withColumn('FEATURES', build_features_udf('first_name','last_name','dob
 
 out.write.mode('overwrite').json('senzing_json')
 ```
-
