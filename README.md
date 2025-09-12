@@ -6,7 +6,8 @@ This repository contains an AI-ready Senzing Entity Specification and a producti
 
 ### Documents folder
 
-- [docs/system_prompt-chatgpt.md](docs/system_prompt-chatgpt.md): system prompt to load into your AI assistant.
+- [docs/system_prompt.md](docs/system_prompt.md): system prompt to load into your AI assistant (authority, operating rules).
+- [docs/mapping_rules.md](docs/mapping_rules.md): quick-reference rules, templates, examples; paste alongside your schema as user context.
 - [docs/senzing_entity_specification.md](docs/senzing_entity_specification.md): authoritative, AI-ready Senzing Entity Spec (this repo is the source of truth).
 - [docs/identifier_crosswalk.json](docs/identifier_crosswalk.json): canonical identifier types, aliases, and mapping guidance.
 - [docs/identifier_lookup_log.md](docs/identifier_lookup_log.md): template to record curated identifier lookups (no PII).
@@ -39,15 +40,17 @@ Data Handling Guidance
 - Use the File Analyzer to produce schema/stats, then provide that summary to the assistant during mapping.
 
 ## Quick Start (Use with your AI of choice)
-1) Load the system prompt
-   - Option A: Paste the contents of `docs/system_prompt-chatgpt.md` into the AI’s “system” message.
+1) Load the system prompt (system message)
+   - Option A: Paste the contents of `docs/system_prompt.md` into the AI’s “system” message.
    - Option B: Provide the raw URL and ask the AI to fetch it (if supported):
-     - System Prompt (raw): https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/system_prompt-chatgpt.md
+     - System Prompt (raw): https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/system_prompt.md
 2) Supply your source schema as context
    - Describe tables/files, fields, keys, arrays/sub-docs, and any relationship/link tables.
    - No schema? Use the file analyzer to profile your data and derive one:
      - `python3 tools/file_analyzer.py -i path/to/data.csv -o path/to/schema.csv`
-3) Map your schema through to code
+3) (Optional) Add mapping rules as context
+   - Paste `docs/mapping_rules.md` to give the AI quick-reference rules, templates, and examples while mapping.
+4) Map your schema through to code
    - Collaborate with the assistant to analyze your schema, agree on mappings, produce example JSON/JSONL, and generate a transformer script to emit Senzing JSONL.
    - Answer numbered questions and approve decisions; iterate until the transformer is ready.
    - Tips for collaborating with an AI:
@@ -60,7 +63,7 @@ Data Handling Guidance
    - Run the transformer you built with the assistant to produce JSONL files.
    - Example: `python3 transform_your_source.py --input path/to/source.csv --output path/to/output.jsonl`
    - Ensure one record per entity with all FEATURES and relationships.
-5) Validate outputs
+6) Validate outputs
    - Lint for schema correctness first:
      - Local file: `python3 tools/lint_senzing_json.py path/to/output.jsonl`
      - Raw URL (for remote use): https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/lint_senzing_json.py
@@ -73,7 +76,8 @@ Prerequisites (minimal)
 - For analyzer table output: `pip install prettytable` (optional)
 
 ## Important Links (Raw)
-- System Prompt: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/system_prompt-chatgpt.md
+- System Prompt: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/system_prompt.md
+- Mapping Rules: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_rules.md
 - Senzing Entity Spec: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/senzing_entity_specification.md
 - Linter: https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/lint_senzing_json.py
 - Identifier Crosswalk: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/identifier_crosswalk.json
