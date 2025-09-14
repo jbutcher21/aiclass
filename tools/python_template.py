@@ -14,6 +14,34 @@ import numpy as np
 # import csv or pandas here
 
 
+def xml_to_dict(element):
+    """Convert XML element to dictionary"""
+    result = {}
+    
+    # Handle text content
+    if element.text and element.text.strip():
+        if len(element) == 0:  # Leaf node
+            return element.text.strip()
+        result['text'] = element.text.strip()
+    
+    # Handle attributes
+    if element.attrib:
+        result.update(element.attrib)
+    
+    # Handle child elements
+    for child in element:
+        child_data = xml_to_dict(child)
+        if child.tag in result:
+            # If tag already exists, convert to list
+            if not isinstance(result[child.tag], list):
+                result[child.tag] = [result[child.tag]]
+            result[child.tag].append(child_data)
+        else:
+            result[child.tag] = child_data
+    
+    return result
+
+
 class Mapper:
     """mapper class"""
 

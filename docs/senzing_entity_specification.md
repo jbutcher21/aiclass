@@ -24,32 +24,32 @@ Entity resolution works best when you have a name and as many other features as 
 | RECORD_TYPE | (e.g., PERSON, ORGANIZATION) | High | Include when known to prevent cross‑type resolution; omit if unknown. Use standardized kinds (PERSON, ORGANIZATION). Often used to determine icon/shape in graphs. |
 | NAME (person) | Personal names | High | Usage: NAME_TYPE PRIMARY, AKA. Prefer parsed person names when available. |
 | NAME (organization) | Organization legal or trade name | High | Usage: NAME_TYPE PRIMARY, DBA. |
-| DATE_OF_BIRTH | Person date of birth | High | Full date preferred, but partial date accepted. |
-| DATE_OF_DEATH | Person date of death | Medium | When applicable. |
-| GENDER | Person gender | Medium | — |
-| NATIONALITY | Person nationality | Low–Medium | — |
-| CITIZENSHIP | Person citizenship | Low–Medium | — |
-| PLACE_OF_BIRTH | Person place of birth | Low–Medium | — |
-| REGISTRATION_DATE | Organization registration/incorporation date | Medium | Full date preferred, but partial date accepted.|
-| REGISTRATION_COUNTRY | Organization registration country | Medium | — |
+| DATE_OF_BIRTH | Person date of birth | High | Full date preferred; partial values accepted. |
 | ADDRESS | Postal/physical address | High | Usage: ADDR_TYPE HOME, MAILING, BUSINESS. Prefer parsed; assign BUSINESS to at least one org address when known. |
+| PASSPORT | Passport identifier | High | Include issuing country (ISO 3166‑1 alpha‑2). |
+| DRLIC | Driver’s license | High | Include issuing state/province/country. |
+| SSN | US Social Security Number | High | Partial values accepted. |
+| TAX_ID | Tax identifier | High  | TAX_ID_TYPE (e.g., EIN, VAT, Tax ID); Include issuing country (ISO 3166‑1 alpha‑2). |
+| NATIONAL_ID | National identifier | High | NATIONAL_ID_TYPE (e.g., NINO, SIN, National ID); Include issuing country (ISO 3166‑1 alpha‑2). |
+| DUNS_NUMBER | Company identifier | Medium | — |
+| LEI_NUMBER | Legal Entity Identifier | Medium | — |
+| NPI_NUMBER | US healthcare provider ID | Medium | — |
+| ACCOUNT | Account or card number | Medium | Usage: ACCOUNT_DOMAIN (e.g., VISA). |
+| OTHER_ID | Other/uncategorized identifier | Medium | Usage: OTHER_ID_TYPE. Use sparingly; prefer adding specific features to avoid cross‑type false positives. |
 | PHONE | Telephone number | Medium | Usage: PHONE_TYPE MOBILE, HOME, WORK. MOBILE has special weight. |
 | EMAIL | Email address | Medium | — |
-| WEBSITE (org) | Organization website/domain | Low | Typically organizations; omit for people unless clearly a personal domain. |
 | Social handles | Social/media handles | Medium | Features include: LINKEDIN, FACEBOOK, TWITTER, SKYPE, ZOOMROOM, INSTAGRAM, WHATSAPP, SIGNAL, TELEGRAM, TANGO, VIBER, WECHAT. |
-| PASSPORT | Passport identifier | High | Include issuing country. |
-| DRLIC | Driver’s license | High | Include issuing state/province/country. |
-| SSN | US Social Security Number | High | Partial accepted. |
-| TAX_ID | Tax identifier | High (org) / Medium (person) | Usage: TAX_ID_TYPE (e.g., EIN, VAT). Include issuing country. |
-| NATIONAL_ID | National identifier | Medium | Usage: NATIONAL_ID_TYPE. Include issuing country. |
-| OTHER_ID | Other/uncategorized identifier (catch‑all) | Low | Usage: OTHER_ID_TYPE. Use sparingly; prefer specific features to avoid cross‑type false positives. |
-| DUNS_NUMBER | Company identifier | High | — |
-| LEI_NUMBER | Legal Entity Identifier | High (financial) | — |
-| NPI_NUMBER | US healthcare provider ID | Medium–High (healthcare) | — |
-| ACCOUNT | Account or card number | Low | Usage: ACCOUNT_DOMAIN (e.g., VISA). |
-| EMPLOYER | Person’s employer organization name | Low–Medium | Group association; helps resolve, not a relationship by itself. |
-| GROUP_ASSOCIATION | Membership/affiliation | Low–Medium | Usage: GROUP_ASSOCIATION_TYPE; include org name. |
-| GROUP_ASSN_ID | Group identifier | Low–Medium | Usage: GROUP_ASSN_ID_TYPE/NUMBER. |
+| GENDER | Person gender | Low-Medium | — |
+| EMPLOYER | Name of a person's employer | Medium-Low | Can aid resolution on smaller companies; subject to generic thresholds; form of group association. |
+| GROUP_ASSOCIATION | Other organization names an entity is associated with | Medium-Low | Can aid resolution on smaller companies, subject to generic thresholds |
+| GROUP_ASSN_ID | Group identifier | Medium-Low | Can aid resolution on smaller companies, subject to generic thresholds. |
+| DATE_OF_DEATH | Person date of death | Low-Medium | When applicable. |
+| REGISTRATION_DATE | Organization registration/incorporation date | Low-Medium | Full date preferred; partial values accepted. |
+| REGISTRATION_COUNTRY | Organization registration country | Low | — |
+| NATIONALITY | Person nationality | Low | — |
+| CITIZENSHIP | Person citizenship | Low | — |
+| PLACE_OF_BIRTH | Person place of birth | Low | Typically not well controlled. |
+| WEBSITE | Organization website/domain | Low | Typically shared across the organization’s hierarchy. |
 | REL_ANCHOR | Relationship anchor for an entity | Relationship | Required if the entity can be related to; one per record. |
 | REL_POINTER | Pointer to a related entity’s anchor | Relationship | Place on source entity; include REL_POINTER_ROLE (e.g., EMPLOYED_BY, SUBSIDIARY_OF, SPOUSE_OF). |
 | TRUSTED_ID | Curated control identifier | Control | Forces records together or apart; like a curated ID layered over source IDs. Use cautiously per guidance. |
@@ -109,7 +109,7 @@ Example (person)
 Structure & Rules
 - Root keys:
   - DATA_SOURCE: required (string).
-  - RECORD_ID: strongly desired (string), unique within DATA_SOURCE.
+  - RECORD_ID: strongly recommended (string), unique within DATA_SOURCE.
   - FEATURES: required (array of flat objects).
 - FEATURES content:
   - One feature family per object (e.g., a NAME object, an ADDRESS object). Do not mix families in the same object.
@@ -281,7 +281,7 @@ These attributes tie records in Senzing back to your source system. Place them a
 | Attribute | Required | Example | Guidance |
 | --- | --- | --- | --- |
 | DATA_SOURCE | Required | CUSTOMERS | Short, stable code naming the source (e.g., CUSTOMERS). If you have multiple similar sources, use distinct codes (e.g., BANKING_CUSTOMERS, MORTGAGE_CUSTOMERS). Prefer uppercase, no spaces. Used for retrieval and reporting — keep it consistent. |
-| RECORD_ID | Strongly Desired | 1001 | Must be unique within DATA_SOURCE; used to add/replace records. If the source lacks a primary key, construct a deterministic ID (e.g., hash of normalized identifying attributes). If omitted, Senzing generates a hash of features, making updates impractical. Do not duplicate RECORD_ID as a feature — retrieval uses DATA_SOURCE + RECORD_ID. |
+| RECORD_ID | Strongly Recommended | 1001 | Must be unique within DATA_SOURCE; used to add/replace records. If the source lacks a primary key, construct a deterministic ID (e.g., hash of normalized identifying attributes). If omitted, Senzing generates a hash of features, making updates impractical. Do not duplicate RECORD_ID as a feature — retrieval uses DATA_SOURCE + RECORD_ID. |
 
 Example
 ```json
@@ -292,11 +292,11 @@ Example
 ```
 
 ### FEATURE: RECORD_TYPE
-Importance: High (see What Features to Map)
+Importance: High
 
 | Attribute | Required | Example | Guidance |
 | --- | --- |  --- | --- |
-| RECORD_TYPE | Strongly Desired | PERSON | Prevents records of different types from resolving. Include when known to prevent cross‑type resolution; leave blank if unknown. Use standardized kinds (PERSON, ORGANIZATION). Often used to pick the icon/shape in graphs. |
+| RECORD_TYPE | Recommended | PERSON | Prevents records of different types from resolving. Include when known to prevent cross‑type resolution; leave blank if unknown. Use standardized kinds (PERSON, ORGANIZATION). Often used to pick the icon/shape in graphs. |
 
 Example
 ```json
@@ -314,7 +314,7 @@ Tips for adding RECORD_TYPEs
 
 
 ## Feature: NAME
-Importance: High (see What Features to Map)
+Importance: High
 
 | Attribute    | Example                 | Guidance |
 | ---          | ---                     | --- |
@@ -377,21 +377,21 @@ Examples
 ```
 
 ## Feature: ADDRESS
-Importance: High (see What Features to Map)
+Importance: High
 
 | Attribute       | Example                                   | Guidance |
 | ---             | ---                                       | --- |
-| ADDR_TYPE       | HOME                                       | Optional; include when provided by the source. Common values: HOME, MAILING (persons); BUSINESS (organizations). |
-| ADDR_LINE1      | 111 First St                               | First address line (street, number). |
-| ADDR_LINE2      | Suite 101                                  | Second address line (apt/suite). |
-| ADDR_LINE3      |                                            | Third address line (optional). |
-| ADDR_LINE4      |                                            | Fourth address line (optional). |
-| ADDR_LINE5      |                                            | Fifth address line (optional). |
-| ADDR_LINE6      |                                            | Sixth address line (optional). |
-| ADDR_CITY       | Las Vegas                                  | City/locality. |
-| ADDR_STATE      | NV                                         | State/province/region code. |
-| ADDR_POSTAL_CODE| 89111                                      | Postal/ZIP code. |
-| ADDR_COUNTRY    | US                                         | Country code. |
+| ADDR_TYPE       | HOME                                      | Optional; include when provided by the source. Common values: HOME, MAILING (persons); BUSINESS (organizations). |
+| ADDR_LINE1      | 111 First St                              | First address line (street, number). |
+| ADDR_LINE2      | Suite 101                                 | Second address line (apt/suite). |
+| ADDR_LINE3      |                                           | Third address line (optional). |
+| ADDR_LINE4      |                                           | Fourth address line (optional). |
+| ADDR_LINE5      |                                           | Fifth address line (optional). |
+| ADDR_LINE6      |                                           | Sixth address line (optional). |
+| ADDR_CITY       | Las Vegas                                 | City/locality. |
+| ADDR_STATE      | NV                                        | State/province/region code. |
+| ADDR_POSTAL_CODE| 89111                                     | Postal/ZIP code. |
+| ADDR_COUNTRY    | US                                        | Country code. |
 | ADDR_FULL       | 3 Underhill Way, Las Vegas, NV 89101, US  | Single-field address when parsed components are unavailable. |
 
 Rules
@@ -427,7 +427,7 @@ Examples
 ```
 
 ## Feature: PHONE
-Importance: Medium (see What Features to Map)
+Importance: Medium
 
 | Attribute    | Example       | Guidance |
 | ---          | ---           | --- |
@@ -435,43 +435,17 @@ Importance: Medium (see What Features to Map)
 | PHONE_NUMBER | 702-555-1212  | Telephone number. |
 
 Rules
-- One PHONE object per instance; do not supply lists or nested objects (see [Scalar vs Non-scalar](#scalar-vs-non-scalar-good-vs-bad)).
 - Include PHONE_TYPE only when the source provides it (MOBILE carries extra weight).
 - One PHONE object per number; represent multiple numbers as multiple PHONE objects.
 - Do not put a list of numbers inside a single PHONE object.
 - When a source uses clear prefixes (e.g., HOME_PHONE), you may derive PHONE_TYPE from the prefix.
 
 Examples
-- ✅ Phone without type
-```json
+```
 {
   "FEATURES": [
+    { "PHONE_TYPE": "MOBILE", "PHONE_NUMBER": "702-555-1212" },
     { "PHONE_NUMBER": "702-555-3434" }
-  ]
-}
-```
-- ✅ Phone with type
-```json
-{
-  "FEATURES": [
-    { "PHONE_TYPE": "MOBILE", "PHONE_NUMBER": "702-555-1212" }
-  ]
-}
-```
-- ❌ Incorrect (multiple instances cannot be in list)
-```json
-{
-  "FEATURES": [
-    { "PHONE_NUMBER": ["702-555-3434" , "702-555-1212"] }
-  ]
-}
-```
-- ✅ Multiple instances are objects in the FEATURES list
-```json
-{
-  "FEATURES": [
-    { "PHONE_NUMBER": "702-555-3434" },
-    { "PHONE_NUMBER": "702-555-1212" }
   ]
 }
 ```
@@ -479,7 +453,7 @@ Examples
 ## Physical and other attributes
 
 ### Feature: GENDER
-Importance: Medium (see What Features to Map)
+Importance: Low-Medium
 
 | Attribute | Example | Guidance |
 | ---       | ---     | --- |
@@ -495,14 +469,11 @@ Example
 ```
 
 ### Feature: DOB (Date of Birth)
-Importance: High (see What Features to Map)
+Importance: High
 
 | Attribute       | Example     | Guidance |
 | ---             | ---         | --- |
 | DATE_OF_BIRTH   | 1980-05-14  | Complete dates preferred; partial dates accepted when only partial is available (e.g., YYYY‑MM or MM‑DD). |
-
-Rule
-- One DATE_OF_BIRTH object per instance; do not supply lists or nested objects (see [Scalar vs Non-scalar](#scalar-vs-non-scalar-good-vs-bad)).
 
 Examples
 ```json
@@ -514,14 +485,12 @@ Examples
 ```
 
 ### Feature: DOD (Date of Death)
-Importance: Medium (see What Features to Map)
+Importance: Low-Medium
 
 | Attribute       | Example     | Guidance |
 | ---             | ---         | --- |
 | DATE_OF_DEATH   | 2010-05-14  | Complete dates preferred; partial dates accepted when only partial is available (e.g., YYYY‑MM or MM‑DD). |
 
-Rule
-- One DATE_OF_DEATH object per instance; do not supply lists or nested objects (see [Scalar vs Non-scalar](#scalar-vs-non-scalar-good-vs-bad)).
 Example
 ```json
 {
@@ -532,14 +501,12 @@ Example
 ```
 
 ### Feature: NATIONALITY
-Importance: Low–Medium (see What Features to Map)
+Importance: Low
 
 | Attribute   | Example | Guidance |
 | ---         | ---     | --- |
 | NATIONALITY | US      | Country of nationality (code or label) as provided by the source. |
 
-Rule
-- One NATIONALITY object per instance; do not supply lists or nested objects (see [Scalar vs Non-scalar](#scalar-vs-non-scalar-good-vs-bad)).
 Example
 ```json
 {
@@ -550,14 +517,12 @@ Example
 ```
 
 ### Feature: CITIZENSHIP
-Importance: Low–Medium (see What Features to Map)
+Importance: Low
 
 | Attribute   | Example | Guidance |
 | ---         | ---     | --- |
 | CITIZENSHIP | US      | Country of citizenship (code or label) as provided by the source. |
 
-Rule
-- One CITIZENSHIP object per instance; do not supply lists or nested objects (see [Scalar vs Non-scalar](#scalar-vs-non-scalar-good-vs-bad)).
 Example
 ```json
 {
@@ -568,14 +533,12 @@ Example
 ```
 
 ### Feature: POB (Place of Birth)
-Importance: Low–Medium (see What Features to Map)
+Importance: Low
 
 | Attribute        | Example   | Guidance |
 | ---              | ---       | --- |
 | PLACE_OF_BIRTH   | Chicago   | Place of birth; may be a city/region or a country code/label as provided by the source. |
 
-Rule
-- One PLACE_OF_BIRTH object per instance; do not supply lists or nested objects (see [Scalar vs Non-scalar](#scalar-vs-non-scalar-good-vs-bad)).
 Example
 ```json
 {
@@ -586,14 +549,12 @@ Example
 ```
 
 ### Feature: REGISTRATION_DATE (Organizations)
-Importance: Medium (see What Features to Map)
+Importance: Low-Medium
 
 | Attribute          | Example     | Guidance |
 | ---                | ---         | --- |
 | REGISTRATION_DATE  | 2010-05-14  | Organization registration/incorporation date. Complete dates preferred; partial dates accepted when only partial is available (e.g., YYYY‑MM or MM‑DD). |
 
-Rule
-- One REGISTRATION_DATE object per instance; do not supply lists or nested objects (see [Scalar vs Non-scalar](#scalar-vs-non-scalar-good-vs-bad)).
 Example
 ```json
 {
@@ -604,14 +565,12 @@ Example
 ```
 
 ### Feature: REGISTRATION_COUNTRY (Organizations)
-Importance: Medium (see What Features to Map)
+Importance: Low
 
 | Attribute             | Example | Guidance |
 | ---                   | ---     | --- |
 | REGISTRATION_COUNTRY  | US      | Country of registration (code or label) as provided by the source. |
 
-Rule
-- One REGISTRATION_COUNTRY object per instance; do not supply lists or nested objects (see [Scalar vs Non-scalar](#scalar-vs-non-scalar-good-vs-bad)).
 Example
 ```json
 {
@@ -624,15 +583,12 @@ Example
 ## Identifiers
 
 ### Feature: PASSPORT
-Importance: High (see What Features to Map)
+Importance: High
 
 | Attribute          | Example     | Guidance |
 | ---                | ---         | --- |
 | PASSPORT_NUMBER    | 123456789   | Passport number. |
-| PASSPORT_COUNTRY   | US          | Issuing country. Include when available. |
-
-Rules
-- One PASSPORT object per instance; do not supply lists or nested objects (see [Scalar vs Non-scalar](#scalar-vs-non-scalar-good-vs-bad)).
+| PASSPORT_COUNTRY   | US          | Issuing country. Strongly recommended. |
 
 Example
 ```json
@@ -644,15 +600,12 @@ Example
 ```
 
 ### Feature: DRLIC (Driver’s License)
-Importance: High (see What Features to Map)
+Importance: High
 
 | Attribute               | Example | Guidance |
 | ---                     | ---     | --- |
 | DRIVERS_LICENSE_NUMBER  | 112233  | Driver’s license number. |
-| DRIVERS_LICENSE_STATE   | NV      | Issuing state/province/country. Include when available. |
-
-Rules
-- One DRLIC object per instance; do not supply lists or nested objects (see [Scalar vs Non-scalar](#scalar-vs-non-scalar-good-vs-bad)).
+| DRIVERS_LICENSE_STATE   | NV      | Issuing state/province/country. Strongly recommended. |
 
 Example
 ```json
@@ -664,14 +617,11 @@ Example
 ```
 
 ### Feature: SSN (US Social Security Number)
-Importance: High (see What Features to Map)
+Importance: High
 
 | Attribute   | Example      | Guidance |
 | ---         | ---          | --- |
 | SSN_NUMBER  | 123-12-1234  | US Social Security Number; partial accepted. |
-
-Rules
-- One SSN object per instance; do not supply lists or nested objects (see [Scalar vs Non-scalar](#scalar-vs-non-scalar-good-vs-bad)).
 
 Example
 ```json
@@ -683,16 +633,16 @@ Example
 ```
 
 ### Feature: NATIONAL_ID
-Importance: Medium (see What Features to Map)
+Importance: High
 
 | Attribute            | Example   | Guidance |
 | ---                  | ---       | --- |
-| NATIONAL_ID_TYPE     | CEDULA    | Type label from source (standardize when possible). If you mapped the issuing country and did not standardize the type, it’s okay to leave this blank. |
+| NATIONAL_ID_TYPE     | CEDULA    | Use the type label from the source; standardize across sources. |
 | NATIONAL_ID_NUMBER   | 123121234 | National identifier value. |
-| NATIONAL_ID_COUNTRY  | FR        | Issuing country. |
+| NATIONAL_ID_COUNTRY  | FR        | Issuing country. Strongly recommended. |
 
 Rules
-- Use NATIONAL_ID for country‑issued identity numbers (often one per person/org). Do not map SSN, PASSPORT, or DRLIC here.
+- If the source type cannot be standardized and NATIONAL_ID_COUNTRY is present, leave NATIONAL_ID_TYPE blank.
 
 Good/Bad
 - ✅ Good
@@ -713,17 +663,16 @@ Good/Bad
 ```
 
 ### Feature: TAX_ID
-Importance: High (org) / Medium (person) (see What Features to Map)
+Importance: High
 
 | Attribute        | Example     | Guidance |
 | ---              | ---         | --- |
-| TAX_ID_TYPE      | EIN         | Type label from source (standardize when possible). If you mapped the issuing country and did not standardize the type, it’s okay to leave this blank. |
-| TAX_ID_NUMBER    | 12-3456789  | Tax identifier value. |
-| TAX_ID_COUNTRY   | US          | Issuing country. |
+| TAX_ID_TYPE      | EIN         | Use the type label from the source; standardize across sources. |
+| TAX_ID_NUMBER    | 12-3456789  | Tax identification number. |
+| TAX_ID_COUNTRY   | US          | Issuing country. Strongly recommended. |
 
 Rules
-- Use TAX_ID for tax‑purpose identifiers (orgs or persons). Organizations may legitimately have multiple TAX_IDs.
-- Prefer specific features (e.g., EIN via TAX_ID, INN, VAT) where identifiable.
+- If the source type cannot be standardized and TAX_ID_COUNTRY is present, leave TAX_ID_TYPE blank.
 
 Good/Bad
 - ✅ Good
@@ -744,33 +693,33 @@ Good/Bad
 ```
 
 ### Feature: OTHER_ID
-Importance: Low (see What Features to Map)
+Importance: Medium
 
 | Attribute         | Example  | Guidance |
 | ---               | ---      | --- |
-| OTHER_ID_TYPE     | ISIN     | Required for classification; choose meaningful values. |
-| OTHER_ID_NUMBER   | 123121234| Identifier value. |
-| OTHER_ID_COUNTRY  | MX       | Issuer country when known (optional). |
+| OTHER_ID_TYPE     | ISIN     | Standardized source type strongly recommended as not always issued by a country |
+| OTHER_ID_NUMBER   | 123121234| Identification number. |
+| OTHER_ID_COUNTRY  | MX       | Optional as country often not known or issued by an organization |
 
 Rules
-- Use OTHER_ID sparingly as a catch‑all when you cannot confidently classify to a specific or generic feature.
-- Prefer adding a specific feature for frequently used non‑country identifiers so matching behavior can be tuned.
+- Use OTHER_ID sparingly, not as a catch‑all when you cannot confidently classify to a specific or generic feature.
+- Prefer adding a specific feature for frequently used non‑country identifiers so matching behavior can be adjusted.
 
 Example
 ```json
 {
   "FEATURES": [
-    { "OTHER_ID_TYPE": "STUDENT_ID", "OTHER_ID_NUMBER": "S-998877" }
+    { "OTHER_ID_TYPE": "ISIN", "OTHER_ID_NUMBER": "123121234" }
   ]
 }
 ```
 
 ### Feature: ACCOUNT
-Importance: Low (see What Features to Map)
+Importance: Medium
 
 | Attribute        | Example                | Guidance |
 | ---              | ---                    | --- |
-| ACCOUNT_NUMBER   | 1234-1234-1234-1234    | Account identifier (e.g., bank, card). |
+| ACCOUNT_NUMBER   | 1234-1234-1234-1234    | Account number (e.g., bank, card). |
 | ACCOUNT_DOMAIN   | VISA                   | Domain/system for the account number. |
 
 Example
@@ -783,7 +732,7 @@ Example
 ```
 
 ### Feature: DUNS_NUMBER
-Importance: High (see What Features to Map)
+Importance: Medium
 
 | Attribute    | Example | Guidance |
 | ---          | ---     | --- |
@@ -799,7 +748,7 @@ Example
 ```
 
 ### Feature: NPI_NUMBER
-Importance: Medium–High (healthcare) (see What Features to Map)
+Importance: Medium
 
 | Attribute    | Example | Guidance |
 | ---          | ---     | --- |
@@ -815,7 +764,7 @@ Example
 ```
 
 ### Feature: LEI_NUMBER
-Importance: High (financial) (see What Features to Map)
+Importance: Medium
 
 | Attribute    | Example | Guidance |
 | ---          | ---     | --- |
@@ -831,15 +780,12 @@ Example
 ```
 
 ## Feature: EMAIL
-Importance: Medium (see What Features to Map)
+Importance: Medium
 
 | Attribute      | Example                | Guidance |
 | ---            | ---                    | --- |
 | EMAIL_ADDRESS  | someone@somewhere.com  | Email address. |
 
-Rules
-- One feature family per object: an EMAIL object should contain only EMAIL_* attributes.
-- One EMAIL object per address; do not supply lists or nested objects (see [Scalar vs Non-scalar](#scalar-vs-non-scalar-good-vs-bad)).
 
 Example
 ```json
@@ -851,15 +797,11 @@ Example
 ```
 
 ## Feature: WEBSITE
-Importance: Low (see What Features to Map)
+Importance: Low
 
 | Attribute        | Example          | Guidance |
 | ---              | ---              | --- |
 | WEBSITE_ADDRESS  | somecompany.com  | Website or domain; typically for organizations. |
-
-Rules
-- Use primarily for organizations; include for a person only when clearly a personal domain.
-- One WEBSITE object per domain; do not supply lists or nested objects (see [Scalar vs Non-scalar](#scalar-vs-non-scalar-good-vs-bad)).
 
 Example
 ```json
@@ -871,53 +813,63 @@ Example
 ```
 
 ## Features for Social Media Handles
-Importance: Medium (see What Features to Map)
+Importance: Medium
 
 Social handle features use the feature name as the attribute name.
 
 | Feature/Attribute | Example           | Guidance |
 | ---               | ---               | --- |
-| LINKEDIN          | company-or-user   | Unique id/handle in the given domain. |
-| FACEBOOK          | company-or-user   | Unique id/handle in the given domain. |
-| TWITTER           | @handle           | Unique id/handle in the given domain. |
-| SKYPE             | handle            | Unique id/handle in the given domain. |
-| ZOOMROOM          | room-id           | Unique id/handle in the given domain. |
-| INSTAGRAM         | @handle           | Unique id/handle in the given domain. |
-| WHATSAPP          | phone-or-handle   | Unique id/handle in the given domain. |
-| SIGNAL            | phone-or-handle   | Unique id/handle in the given domain. |
-| TELEGRAM          | @handle           | Unique id/handle in the given domain. |
-| TANGO             | handle            | Unique id/handle in the given domain. |
-| VIBER             | phone-or-handle   | Unique id/handle in the given domain. |
-| WECHAT            | handle            | Unique id/handle in the given domain. |
+| LINKEDIN          | in/jane-doe       | Canonical handle/ID; no URL; no leading @. |
+| FACEBOOK          | brand.page        | Canonical handle/ID; no URL; no leading @. |
+| TWITTER           | john_doe          | Canonical handle/ID; no URL; no leading @. |
+| SKYPE             | handle            | Canonical handle/ID; no URL. |
+| ZOOMROOM          | room-id           | Canonical handle/ID; no URL. |
+| INSTAGRAM         | jane.doe          | Canonical handle/ID; no URL; no leading @. |
+| WHATSAPP          | +14155551234      | Canonical handle/ID; also map to PHONE. |
+| SIGNAL            | +14155551234      | Canonical handle/ID; also map to PHONE. |
+| TELEGRAM          | acme_support      | Canonical handle/ID; strip t.me/. |
+| TANGO             | handle            | Canonical handle/ID; no URL. |
+| VIBER             | +14155551234      | Canonical handle/ID; also map to PHONE. |
+| WECHAT            | handle            | Canonical handle/ID; no URL. |
 
-Rule
-- One handle per object; do not supply lists or nested objects (see [Scalar vs Non-scalar](#scalar-vs-non-scalar-good-vs-bad)).
+Rules
+- Normalize values: store the canonical handle/ID, not a full URL. Strip `http(s)://`, `www.`, trailing slashes, query params, and a leading `@`.
+- One handle per object: add one FEATURES object per platform handle; do not concatenate multiple handles.
+- Prefer handle/ID over URL: if only a profile URL is provided, extract the handle/ID.
+- Don’t use content links: skip post/status URLs; only capture profile-level handles/IDs.
+- Case handling: store handles lowercased for case‑insensitive platforms; preserve exact case if a platform is case‑sensitive.
+- Phone‑based apps: when a handle is a phone number (e.g., WhatsApp, Signal, Viber), also map the number to PHONE in addition to the app‑specific feature.
+- Persons vs organizations: map personal handles on person records and brand handles on organization records when known; avoid crossing them.
+- Stability: handles can change; use alongside stronger identifiers (email, phone, gov IDs).
+
+- Platform specifics
+  - TWITTER (X): letters, numbers, underscores; length 1–15; case‑insensitive.
+  - INSTAGRAM: letters, numbers, periods, underscores; length 1–30; case‑insensitive.
+  - TELEGRAM: letters, numbers, underscores; 5–32; case‑insensitive; strip `t.me/`.
+  - LINKEDIN: prefer the public slug (e.g., `in/jane-doe` or `company/acme`); if only a URL is provided, extract the slug.
 
 Example
 ```json
 {
   "FEATURES": [
-    { "LINKEDIN": "acme-tire-inc" }
+    { "LINKEDIN": "in/john-smith" },
+    { "TWITTER": "janedoe" }
   ]
 }
 ```
 
-
 ## Group Associations
 
-Group associations capture memberships or affiliations (e.g., employer, club) that can improve entity resolution across sources.  They are not the same as disclosed relationships. Group associations help resolve entities; disclosed relationships relate entities.
-
-Warning: Group associations are subject to generic thresholds to reduce false positives and maintain performance. They will not resolve all employees of a large organization across sources; they are most effective with smaller cohorts (e.g., executives, owners, specific teams).
+Group associations capture memberships or affiliations (e.g., employer, club) that aid entity resolution across sources. They do not create disclosed relationships. Group associations are subject to generic thresholds and are most effective for smaller, specific groups; they are less effective for very large, generic groups.
 
 ### Feature: EMPLOYER
-Importance: Low–Medium (see What Features to Map)
+Importance: Low-Medium
 
-| Attribute | Example | Notes |
+| Attribute | Example | Guidance |
 | --- | --- | --- | 
 | EMPLOYER | ABC Company | This is the name of the organization the person is employed by. |
 
 Rules
-- Use EMPLOYER to help resolve people who share an employer across sources; it does not create a disclosed relationship by itself.
 - When the source provides explicit employment relationships between person and organization records, prefer REL_POINTER/REL_ANCHOR to model the relationship; EMPLOYER can still be included for resolution.
 
 Example
@@ -930,33 +882,33 @@ Example
 ```
 
 ### Feature: GROUP_ASSOCIATION
-Importance: Low–Medium (see What Features to Map)
+Importance: Low-Medium
 
-| Attribute | Example | Notes |
+| Attribute | Example | Guidance |
 | --- | --- | --- | 
-| GROUP_ASSOCIATION_TYPE | MEMBER | This is the type of group an entity belongs to. |
-| GROUP_ASSOCIATION_ORG_NAME | Group name | This is the name of the organization an entity belongs to. |
+| GROUP_ASSOCIATION_TYPE | OWNER_EXEC | Specific group/role within the organization; use precise categories (e.g., OWNER_EXEC, BOARD_MEMBER) to improve resolution. |
+| GROUP_ASSOCIATION_ORG_NAME | Group name | Name of the associated organization; use the official or standardized name. |
 
 Rules
-- Use GROUP_ASSOCIATION to capture memberships/affiliations that aid resolution; it does not create a disclosed relationship by itself.
-- Include GROUP_ASSOCIATION_TYPE only when the source clearly indicates it (e.g., MEMBER, OFFICER, OWNER).
+- Provide GROUP_ASSOCIATION_TYPE to keep the group specific. Specific roles/groups (e.g., owners/executives of a company) are much smaller than the general population and therefore more discriminative.
+- Example of discriminative power: the combination of a name with a small group (e.g., "George Washington" + "US President") is far rarer than the name alone.
 
 Example
 ```json
 {
   "FEATURES": [
-    { "GROUP_ASSOCIATION_TYPE": "MEMBER", "GROUP_ASSOCIATION_ORG_NAME": "Local Trade Group" }
+    { "GROUP_ASSOCIATION_TYPE": "OWNER_EXEC", "GROUP_ASSOCIATION_ORG_NAME": "ABC Company" }
   ]
 }
 ```
 
 ### Feature: GROUP_ASSN_ID
-Importance: Low–Medium (see What Features to Map)
+Importance: Low-Medium
 
-| Attribute | Example | Notes |
+| Attribute | Example | Guidance |
 | --- | --- | --- | 
-| GROUP_ASSN_ID_TYPE | DUNS | When the group a person is associated with has a registered identifier, place the type of identifier here. |
-| GROUP_ASSN_ID_NUMBER | 12345 | When the group a person is associated with has a registered identifier, place the identifier here. |
+| GROUP_ASSN_ID_TYPE | COMPANY_ID | The type of group identifier an entity is associated with. |
+| GROUP_ASSN_ID_NUMBER | 12345 | The identifier the entity is associated with. If the group has a registered identifier, place it here. |
 
 Rules
 - Use when the group/organization has a registered identifier (e.g., DUNS). Include both type and number when available.
@@ -965,7 +917,7 @@ Example
 ```json
 {
   "FEATURES": [
-    { "GROUP_ASSN_ID_TYPE": "DUNS", "GROUP_ASSN_ID_NUMBER": "12345" }
+    { "GROUP_ASSN_ID_TYPE": "COMPANY_ID", "GROUP_ASSN_ID_NUMBER": "12345" }
   ]
 }
 ```
@@ -981,9 +933,9 @@ A relationship can either be unidirectional, where one record points to the othe
 This is accomplished by giving a REL_ANCHOR feature to any record that can be related to and a REL_POINTER feature to each record that relates to it.   A record should only ever have one REL_ANCHOR feature, but may have zero or more REL_POINTER features.  For instance, several people may be related to a company so the company only needs one REL_ANCHOR feature they all point to.  But a single person may be related to more than one company so that person can have several REL_POINTER features. 
 
 ### Feature: REL_ANCHOR
-Category: Relationship (see What Features to Map)
+Category: Relationship
 
-| Attribute | Example | Notes |
+| Attribute | Example | Guidance |
 | --- | --- | --- | 
 | REL_ANCHOR_DOMAIN | CUSTOMERS | This code helps keep the REL_ANCHOR_KEY unique.  This is a code (without dashes) for the data source or source field that is contributing the relationship.  
 | REL_ANCHOR_KEY | 1001 | This key should be a unique value for the record within the REL_ANCHOR_DOMAIN.  You can just use the current record's RECORD_ID here.|
@@ -1014,9 +966,9 @@ Examples
 ```
 
 ### Feature: REL_POINTER
-Category: Relationship (see What Features to Map)
+Category: Relationship
 
-| Attribute | Example | Notes |
+| Attribute | Example | Guidance |
 | --- | --- | --- | 
 | REL_POINTER_DOMAIN | CUSTOMERS | See REL_ANCHOR_DOMAIN above. |
 | REL_POINTER_KEY | 1001 | See REL_ANCHOR_KEY above.
@@ -1047,19 +999,16 @@ Examples
 ```
 
 ### Feature: TRUSTED_ID
-Category: Control (see What Features to Map)
+Category: Control
 
 A Trusted ID will absolutely force records together when they have the same key in the same domain even if all their other features are different.  Conversely, two records with a different key in the same domain will be forced apart even if all their other features are the same.
 
 This feature can be used by data stewards to manually force records together or apart.  It can also be used for an source system identifier that is so trusted you want it to never be overruled by Senzing.  
 
-| Attribute | Example | Notes |
+| Attribute | Example | Guidance |
 | --- | --- | --- |
 | TRUSTED_ID_DOMAIN | STEWARD | Short code for the identifier domain/system (e.g., STEWARD, MASTER_ID). |
 | TRUSTED_ID_KEY | 1234-12345 | The identifier value shared by records that must resolve together. |
-
-Rules
-- One TRUSTED_ID object per curated identifier. If a record legitimately has multiple curated IDs, add multiple TRUSTED_ID objects (one per ID).
 
 Example
 ```json
