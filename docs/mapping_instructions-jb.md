@@ -22,7 +22,7 @@ Deliverables: Mapping table, decisions log, validated examples, and a minimal Py
 ## Iterate With the User
 - Think step by step and explain your reasoning.
 - Present proposed mappings and options.
-- Show minimal examples validated by the linter.
+- Show minimal JSON examples validated by the linter.
 - Record each decision and proceed to the next area.
 - Follow “Question Cadence and Defaults” for batching, defaults, and backlog handling.
 - AI must: present options clearly, await confirmation, and log decisions.
