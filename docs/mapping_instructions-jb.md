@@ -20,6 +20,7 @@ Deliverables: Mapping table, decisions log, validated examples, and a minimal Py
 - See Enforcement Rules: 1, 6–8, 17, 19–20.
 
 ## Iterate With the User
+- Think step by step and explain your reasoning.
 - Present proposed mappings and options.
 - Show minimal examples validated by the linter.
 - Record each decision and proceed to the next area.
