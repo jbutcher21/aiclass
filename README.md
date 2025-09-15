@@ -2,6 +2,34 @@
 
 This repository contains an AI-ready Senzing Entity Specification and a production-ready system prompt to guide mapping of source schemata to valid Senzing JSON. It also includes a JSON linter and identifier crosswalk to standardize mappings.
 
+## Prerequisites
+
+This is a hands-on session where you will learn how to map data to Senzing using AI. Each participant should come prepared so we can move quickly and focus on solving your real-world mapping challenges.
+
+What to bring:
+- Laptop: each participant needs their own laptop (Mac/Windows).
+- AI account: a paid ChatGPT account or another paid AI assistant. Let us know if you already use another provider and want to use it.
+- AI app/interface: the ChatGPT app or your preferred AI app. For technical users, it’s fine if you already have an AI chat integrated with VS Code.
+- Your data file: bring a real dataset you want to map (CSV, JSON, etc.). Aim for a representative sample that’s safe to use in class. If you can’t share production data, bring a small, sanitized sample.
+- Python 3.7 or later: needed to run the mapping/validation code the AI will generate.
+  - Verify: `python3 --version` (or `python --version` on Windows).
+- Senzing environment (for final validation): we will load your mapped JSON into Senzing.
+  - Recommended: Docker, to use Senzing’s prebuilt containers.
+  - Verify: `docker --version` (if you plan to run locally with containers).
+  - See “Senzing Docker Quickstart” below; instructors can help if needed.
+
+Notes
+- We want you to solve a real problem. Bring a dataset and context so we can map to Senzing in a way that’s meaningful to your use case.
+- Keep sensitive data safe. Prefer samples or de-identified subsets when possible.
+
+## Senzing Docker Quickstart
+- Install Docker Desktop (Mac/Windows) and complete the first-run setup.
+- Verify Docker is running: `docker --version` and `docker run hello-world`.
+- Ensure at least 4 GB RAM is allocated to Docker (Settings → Resources).
+- Create a working folder for workshop files (e.g., `~/senzing-workshop`).
+- We will provide a `docker compose` file in class to start required Senzing services and a simple loader.
+- If you cannot install Docker, let us know in advance; we will provide alternatives during the session.
+
 ## What’s Inside
 
 ### Documents folder
@@ -41,20 +69,22 @@ Data Handling Guidance
 - If you don't already have a schema, use the File Analyzer in the tools directory to produce a schema and stats summary, then provide that summary to the assistant during mapping (`tools/file_analyzer.py`).
 
 ## Quick Start (Use with your AI of choice)
-1) Load the system prompt (system message)
-   - Preferred: Use `docs/mapping_instructions-jb.md` as the system prompt.
-     - Paste the contents directly into the AI’s “system” message, or provide the raw URL if your AI can fetch it:
-       - System Prompt (raw): https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_instructions-jb.md
-   - If your AI interface cannot fetch from a URL, upload both files so it has full context locally:
-     - `docs/senzing_entity_specification.md`
-     - `docs/mapping_instructions-jb.md`
-2) Supply your source schema as context
-   - Provide the actual schema documentation from your data provider (data dictionary, ERD, column descriptions).
-     - If it’s published at a URL and your AI can fetch URLs, share the link.
-     - Otherwise, upload the schema files directly so the assistant can read them.
-   - No schema available? Use the File Analyzer in the tools directory to generate a schema and stats summary, then upload that summary:
+1) Create a project and add your data
+   - Make a working directory for this class (e.g., `~/senzing-workshop/my-source`).
+   - Put your dataset into it (e.g., a `data/` subfolder).
+   - No dataset? Copy from the employee demo to get started: copy `employee_demo/data/` and, if desired, `employee_demo/schema/`.
+2) Generate a schema with the File Analyzer
+   - If you don’t have a schema, create one from your file:
      - `python3 tools/file_analyzer.py -i path/to/data.csv -o path/to/schema.csv`
-3) Map your schema through to code
+   - Place the output schema (e.g., `schema.csv`) in your project (e.g., a `schema/` subfolder).
+3) Start an AI chat and add your schema
+   - Provide your schema (the CSV summary or your official data dictionary) to the AI as context so it can read field names and types.
+4) Add Senzing mapping materials as chat context
+   - Upload or link these three files to your chat so the AI can reference them (no special “system” prompt required):
+     - `docs/mapping_instructions-jb.md` — https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_instructions-jb.md
+     - `docs/senzing_entity_specification.md` — https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/senzing_entity_specification.md
+     - `tools/lint_senzing_json.py` — https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/lint_senzing_json.py
+5) Map your schema through to code
    - Tell the assistant: "Use the mapping instructions and begin mapping the schema."
    - Collaborate with the assistant to analyze your schema, agree on mappings, produce example JSON/JSONL, and generate a transformer script to emit Senzing JSONL.
    - Answer numbered questions and approve decisions; iterate until the transformer is ready.
@@ -65,21 +95,17 @@ Data Handling Guidance
      - Ask for a recommendation: when unsure, ask which option aligns with the Senzing spec and why.
      - Correct it when it gets something wrong. Tell it what is wrong and what you you expect it to do. Correct with examples: show one correct and one incorrect example when fixing behavior.
      - Keep context tight: if the thread drifts, repost the key schema snippet and goals.
-4) Generate Senzing JSON output
+6) Generate Senzing JSON output
    - Run the transformer you built with the assistant to produce JSONL files.
    - Example: `python3 transform_your_source.py --input path/to/source.csv --output path/to/output.jsonl`
    - Ensure one record per entity with all FEATURES and relationships.
-5) Validate outputs
+7) Validate outputs
    - Lint for schema correctness first:
      - Local file: `python3 tools/lint_senzing_json.py path/to/output.jsonl`
      - Raw URL (for remote use): https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/lint_senzing_json.py
    - Then analyze with Senzing JSON Analyzer:
      - `python3 tools/sz_json_analyzer.py -i path/to/output.jsonl -o path/to/report.csv`
      - Shows recognized vs. unmapped features, population and uniqueness percents, and top values post-mapping.
-
-Prerequisites (minimal)
-- Python 3.8+
-- For analyzer table output: `pip install prettytable` (optional)
 
 ## Important Links (Raw)
 - System Prompt (Mapping Instructions – JB): https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_instructions-jb.md
