@@ -22,18 +22,18 @@ Entity resolution works best when you have a name and as many other features as 
 | Feature | Description | Importance | Guidance |
 | --- | --- | --- | --- |
 | RECORD_TYPE | (e.g., PERSON, ORGANIZATION) | High | Include when known to prevent cross‑type resolution; omit if unknown. Use standardized kinds (PERSON, ORGANIZATION). Often used to determine icon/shape in graphs. |
-| NAME (person) | Personal names | High | Look for: legal name, aliases/AKAs, maiden/former names, nickname/preferred name, transliterations/alternate scripts. Prefer parsed components when available. |
+| NAME (person) | Personal names | High | Look for: legal name, aliases/AKAs, maiden/former names, nickname/preferred name, transliterations/alternate scripts. Prefer parsed components when available (FIRST, MIDDLE, LAST, SUFFIX). |
 | NAME (organization) | Organization legal or trade name | High | Look for: legal/registered name, trade/DBA, former names, short/brand names, transliterations/alternate scripts. |
 | DATE_OF_BIRTH | Person date of birth | High | Full date preferred; partial values accepted. |
-| ADDRESS (person) | Postal/physical address | High | Look for: residential/home, mailing/remittance, previous/old; prefer parsed components when available. |
-| ADDRESS (organization) | Organization location address | High | Look for: physical/business/registered office, mailing/remittance; prefer parsed components when available. |
+| ADDRESS (person) | Postal/physical address | High | Look for: residential/home, mailing/remittance, previous/old; prefer parsed components when available (LINE1/2, CITY, STATE/PROVINCE, POSTAL_CODE, COUNTRY). |
+| ADDRESS (organization) | Organization location address | High | Look for: physical/business/registered office, mailing/remittance; prefer parsed components when available (LINE1/2, CITY, STATE/PROVINCE, POSTAL_CODE, COUNTRY). |
 | PASSPORT | Passport identifier | High | Include issuing country. |
 | DRLIC | Driver’s license | High | Include issuing state/province/country. |
 | SSN | US Social Security Number | High | Partial values accepted. |
 | TAX_ID | Tax identifier | High | Look for: EIN, VAT, TIN/ITIN; include issuing country. |
 | NATIONAL_ID (person) | National/person identifier | High | Look for country‑specific IDs; include issuing country. Common examples: SIN (CA), CURP (MX), NINO (UK), NIR/INSEE (FR). |
 | NATIONAL_ID (organization) | National/company registration identifier | High | Look for company registry numbers (not tax/VAT); include issuing country. Common examples: Company Number/CRN (UK), SIREN/SIRET (FR), Corporation Number (CA), Folio Mercantil (MX). |
-| PHONE | Telephone number | Medium | Look for all phone numbers; personal mobile numbers carry additional weight. |
+| PHONE | Telephone number | Medium | Look for all phone numbers; distinguish mobile if possible; personal mobile numbers carry additional weight. |
 | EMAIL | Email address | Medium | — |
 | Social handles | Social/media handles | Medium | Features include: LINKEDIN, FACEBOOK, TWITTER, SKYPE, ZOOMROOM, INSTAGRAM, WHATSAPP, SIGNAL, TELEGRAM, TANGO, VIBER, WECHAT. |
 | DUNS_NUMBER | Company identifier | Medium | — |
@@ -43,10 +43,10 @@ Entity resolution works best when you have a name and as many other features as 
 | OTHER_ID | Other/uncategorized identifier | Medium | For identifier types that can’t be mapped to one of Senzing’s specific identifier features. Use sparingly; if an identifier is used frequently, create a dedicated feature for it. |
 | GENDER | Person gender | Low-Medium | — |
 | EMPLOYER | Name of a person's employer | Medium-Low | Can aid resolution on smaller companies; subject to generic thresholds; form of group association. |
-| GROUP_ASSOCIATION | Other organization names an entity is associated with | Medium-Low | Can aid resolution on smaller companies, subject to generic thresholds |
-| GROUP_ASSN_ID | Group identifier | Medium-Low | Can aid resolution on smaller companies, subject to generic thresholds. |
-| DATE_OF_DEATH | Person date of death | Low-Medium | When applicable. |
-| REGISTRATION_DATE | Organization registration/incorporation date | Low-Medium | Full date preferred; partial values accepted. |
+| GROUP_ASSOCIATION | Other organization names an entity is associated with | Medium-Low | Can aid resolution on smaller domains, subject to generic thresholds. |
+| GROUP_ASSN_ID | Group identifier | Medium-Low | Can aid resolution on smaller domains, subject to generic thresholds. |
+| DATE_OF_DEATH | Person date of death | Medium-Low | When applicable. |
+| REGISTRATION_DATE | Organization registration/incorporation date | Medium-Low | Full date preferred; partial values accepted. |
 | REGISTRATION_COUNTRY | Organization registration country | Low | — |
 | NATIONALITY | Person nationality | Low | — |
 | CITIZENSHIP | Person citizenship | Low | — |
@@ -72,7 +72,7 @@ Here are some examples of useful payload attributes:
 
 Performance note:
 - Payload increases storage and I/O. Include only when it materially improves downstream understanding. On very large systems, evaluate impact before enabling broadly.
-- If you do decide to include them, keep them minimal and only include what helps a human understand matches.
+- If you do decide to include them, keep them minimal and only include what helps a human understand matches or an algorithm to triage them.
 - You may decide to map a few during a proof of concept while you are analyzing matches and then remove them when you go to production.
 
 # Examples of Senzing JSON
@@ -205,15 +205,17 @@ Relationships are directional
 - The “from” (source) record gets the REL_POINTER; the “to” (target) record gets the REL_ANCHOR. Include one REL_ANCHOR per record when it can be related to; include as many REL_POINTERs as needed to represent its outgoing relationships.
 
 Checklist
-- Keys: Find a unique key for each core entity (per DATA_SOURCE). If none exists, derive a deterministic RECORD_ID from identifying attributes.
+- Keys: Find the primary key for each core entity (per DATA_SOURCE). If none exists, construct a deterministic ID (e.g., hash of normalized identifying attributes) to use as RECORD_ID.
+
 - Children: Identify child lists/tables for names, addresses, phones, identifiers, emails, websites, social handles; join/aggregate them as separate FEATURES.
 - Relationships: Locate link/join tables or explicit edge lists with roles/verbs; produce REL_POINTER(s) from the source entity to the target’s REL_ANCHOR with a clear REL_POINTER_ROLE.
 - Arrays/sub‑documents: In JSON/XML, locate nested arrays (names, addresses, phones, identifiers) and flatten into FEATURES.
 - Code lookups: Resolve type and country codes via code tables (e.g., address types, identifier issuing countries).
 - Join strategy: Emit one JSON record per entity, containing all FEATURES and REL_* features, per the Recommended JSON Structure.
 
-Transaction‑like inputs
-- For records that embed loosely controlled external parties (e.g., wires with free‑form sender/receiver), extract party identifiers and features, deduplicate, and create deterministic RECORD_IDs. Stamp the derived IDs on the transaction rows so downstream analysis can join back to resolved entities.
+Embedded (keyless) entities
+- For records that reference entities without unique keys (e.g., sender and receiver on transactions), extract identifying attributes and compute a deterministic RECORD_ID as a hash of normalized values. Stamp this ID on the source record before mapping to Senzing, and track these IDs on the source side as well.
+- Use a stable normalization recipe (fixed fields and order; trim/collapse whitespace; case‑fold; normalize punctuation/diacritics) before hashing.
 
 # General mapping guidance
 
