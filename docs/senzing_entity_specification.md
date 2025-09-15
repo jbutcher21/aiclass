@@ -19,26 +19,28 @@ The process of mapping is taking a source field name, like CustomerName, and tra
 
 Entity resolution works best when you have a name and as many other features as you can find. The more features on each record, the better the entity resolution! Below are feature lists to look for in your sources. Rank indicates typical importance to entity resolution. 
 
-| Feature | Description | Importance | Guidance (Usage Types) |
+| Feature | Description | Importance | Guidance |
 | --- | --- | --- | --- |
 | RECORD_TYPE | (e.g., PERSON, ORGANIZATION) | High | Include when known to prevent cross‑type resolution; omit if unknown. Use standardized kinds (PERSON, ORGANIZATION). Often used to determine icon/shape in graphs. |
-| NAME (person) | Personal names | High | Usage: NAME_TYPE PRIMARY, AKA. Prefer parsed person names when available. |
-| NAME (organization) | Organization legal or trade name | High | Usage: NAME_TYPE PRIMARY, DBA. |
+| NAME (person) | Personal names | High | Look for: legal name, aliases/AKAs, maiden/former names, nickname/preferred name, transliterations/alternate scripts. Prefer parsed components when available. |
+| NAME (organization) | Organization legal or trade name | High | Look for: legal/registered name, trade/DBA, former names, short/brand names, transliterations/alternate scripts. |
 | DATE_OF_BIRTH | Person date of birth | High | Full date preferred; partial values accepted. |
-| ADDRESS | Postal/physical address | High | Usage: ADDR_TYPE HOME, MAILING, BUSINESS. Prefer parsed; assign BUSINESS to at least one org address when known. |
-| PASSPORT | Passport identifier | High | Include issuing country (ISO 3166‑1 alpha‑2). |
+| ADDRESS (person) | Postal/physical address | High | Look for: residential/home, mailing/remittance, previous/old; prefer parsed components when available. |
+| ADDRESS (organization) | Organization location address | High | Look for: physical/business/registered office, mailing/remittance; prefer parsed components when available. |
+| PASSPORT | Passport identifier | High | Include issuing country. |
 | DRLIC | Driver’s license | High | Include issuing state/province/country. |
 | SSN | US Social Security Number | High | Partial values accepted. |
-| TAX_ID | Tax identifier | High  | TAX_ID_TYPE (e.g., EIN, VAT, Tax ID); Include issuing country (ISO 3166‑1 alpha‑2). |
-| NATIONAL_ID | National identifier | High | NATIONAL_ID_TYPE (e.g., NINO, SIN, National ID); Include issuing country (ISO 3166‑1 alpha‑2). |
+| TAX_ID | Tax identifier | High | Look for: EIN, VAT, TIN/ITIN; include issuing country. |
+| NATIONAL_ID (person) | National/person identifier | High | Look for country‑specific IDs; include issuing country. Common examples: SIN (CA), CURP (MX), NINO (UK), NIR/INSEE (FR). |
+| NATIONAL_ID (organization) | National/company registration identifier | High | Look for company registry numbers (not tax/VAT); include issuing country. Common examples: Company Number/CRN (UK), SIREN/SIRET (FR), Corporation Number (CA), Folio Mercantil (MX). |
+| PHONE | Telephone number | Medium | Look for all phone numbers; personal mobile numbers carry additional weight. |
+| EMAIL | Email address | Medium | — |
+| Social handles | Social/media handles | Medium | Features include: LINKEDIN, FACEBOOK, TWITTER, SKYPE, ZOOMROOM, INSTAGRAM, WHATSAPP, SIGNAL, TELEGRAM, TANGO, VIBER, WECHAT. |
 | DUNS_NUMBER | Company identifier | Medium | — |
 | LEI_NUMBER | Legal Entity Identifier | Medium | — |
 | NPI_NUMBER | US healthcare provider ID | Medium | — |
-| ACCOUNT | Account or card number | Medium | Usage: ACCOUNT_DOMAIN (e.g., VISA). |
-| OTHER_ID | Other/uncategorized identifier | Medium | Usage: OTHER_ID_TYPE. Use sparingly; prefer adding specific features to avoid cross‑type false positives. |
-| PHONE | Telephone number | Medium | Usage: PHONE_TYPE MOBILE, HOME, WORK. MOBILE has special weight. |
-| EMAIL | Email address | Medium | — |
-| Social handles | Social/media handles | Medium | Features include: LINKEDIN, FACEBOOK, TWITTER, SKYPE, ZOOMROOM, INSTAGRAM, WHATSAPP, SIGNAL, TELEGRAM, TANGO, VIBER, WECHAT. |
+| ACCOUNT | Account or card number | Medium | Look for bank or other account numbers that can aid resolution, especially across data sources. |
+| OTHER_ID | Other/uncategorized identifier | Medium | For identifier types that can’t be mapped to one of Senzing’s specific identifier features. Use sparingly; if an identifier is used frequently, create a dedicated feature for it. |
 | GENDER | Person gender | Low-Medium | — |
 | EMPLOYER | Name of a person's employer | Medium-Low | Can aid resolution on smaller companies; subject to generic thresholds; form of group association. |
 | GROUP_ASSOCIATION | Other organization names an entity is associated with | Medium-Low | Can aid resolution on smaller companies, subject to generic thresholds |
