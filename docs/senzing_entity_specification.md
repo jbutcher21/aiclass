@@ -206,7 +206,6 @@ Relationships are directional
 
 Checklist
 - Keys: Find the primary key for each core entity (per DATA_SOURCE). If none exists, construct a deterministic ID (e.g., hash of normalized identifying attributes) to use as RECORD_ID.
-
 - Children: Identify child lists/tables for names, addresses, phones, identifiers, emails, websites, social handles; join/aggregate them as separate FEATURES.
 - Relationships: Locate link/join tables or explicit edge lists with roles/verbs; produce REL_POINTER(s) from the source entity to the target’s REL_ANCHOR with a clear REL_POINTER_ROLE.
 - Arrays/sub‑documents: In JSON/XML, locate nested arrays (names, addresses, phones, identifiers) and flatten into FEATURES.
@@ -215,6 +214,7 @@ Checklist
 
 Embedded (keyless) entities
 - For records that reference entities without unique keys (e.g., sender and receiver on transactions), extract identifying attributes and compute a deterministic RECORD_ID as a hash of normalized values. Stamp this ID on the source record before mapping to Senzing, and track these IDs on the source side as well.
+- For records that have features that clearly do not belong to the primary entity (e.g., employer name and address on a contact list, reference name and phone number on a job application), consider creating a second entity related to the primary entity.
 - Use a stable normalization recipe (fixed fields and order; trim/collapse whitespace; case‑fold; normalize punctuation/diacritics) before hashing.
 
 # General mapping guidance
