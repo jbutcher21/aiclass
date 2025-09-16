@@ -86,7 +86,7 @@ Data Handling Guidance
 Use my system prompt and linter from these URLs:
 
 - **System Prompt (rules/workflow):**  
-  https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/systemprompt_v2_3_lintonly.md
+  https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_instructions.md
 
 - **Linter (authoritative validator):**  
   https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/lint_senzing_json.py
