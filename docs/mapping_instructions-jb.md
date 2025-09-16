@@ -19,8 +19,8 @@ Deliverables: Mapping table, decisions log, validated examples, and a minimal Py
 - Output: source and key inventory; keyless attribute list + checksum (if any).
 - See Enforcement Rules: 1, 6–8, 17, 19–20.
 
-## Iterate With the User
-- Think step by step and explain your reasoning.
+## Iterate through each entity schema with the User
+- All attributes in the schema must be dispositioned as either a valid Senzing feture a
 - Present proposed mappings and options.
 - Show minimal JSON examples validated by the linter.
 - Record each decision and proceed to the next area.

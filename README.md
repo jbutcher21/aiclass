@@ -77,7 +77,38 @@ Data Handling Guidance
    - If you don’t have a schema, create one from your file:
      - `python3 tools/file_analyzer.py -i path/to/data.csv -o path/to/schema.csv`
    - Place the output schema (e.g., `schema.csv`) in your project (e.g., a `schema/` subfolder).
-3) Start an AI chat and add your schema
+3) 
+
+
+# Bootstrap Instructions for Mapping Sessions
+
+```markdown
+Use my system prompt and linter from these URLs:
+
+- **System Prompt (rules/workflow):**  
+  https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/systemprompt_v2_3_lintonly.md
+
+- **Linter (authoritative validator):**  
+  https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/lint_senzing_json.py
+
+Instructions:
+1. Load the system prompt and treat it as the governing rules for this session.  
+2. Always follow the spec rules linked inside that prompt.  
+3. Use the linter at the given URL as the authoritative compliance checker.  
+   - If I upload the linter file here, you should actually run it on any Preview JSON (`python3 tools/lint_senzing_json.py preview.jsonl`).  
+   - If not uploaded, ask me to run it locally and paste the results.  
+```
+
+or 
+
+```markdown
+Use system prompt from https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_instructions.md and linter from https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/lint_senzing_json.py — then wait for me to provide the source schema or records before starting.
+```
+
+
+
+for everything in this session.
+Start an AI chat and add your schema
    - Provide your schema (the CSV summary or your official data dictionary) to the AI as context so it can read field names and types.
 4) Add Senzing mapping materials as chat context
    - Upload or link these three files to your chat so the AI can reference them (no special “system” prompt required):
@@ -115,3 +146,22 @@ Data Handling Guidance
 - Linter: https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/lint_senzing_json.py
 - Identifier Crosswalk: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/identifier_crosswalk.json
 - JSON Analyzer Docs (Senzing Garage): https://github.com/senzing-garage/sz-json-analyzer
+
+
+## 🔹 How to Use ChatGPT with the Senzing Entity Specification
+
+When mapping a new source system to the Senzing entity model, you need to ensure ChatGPT always uses the **canonical schema and feature dictionary** defined in [`senzing_entity_specification.md`](https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/senzing_entity_specification.md).
+
+There are two ways to start a ChatGPT session:
+
+---
+
+### ⚡ Quick Mode
+Paste this snippet at the beginning of your session:
+
+```markdown
+Load and use the authoritative schema and feature dictionary from:  
+https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/senzing_entity_specification.md  
+
+- Do not invent features or root attributes not listed in that file.  
+- All mapping, validation, and code generation must conform to it.  
