@@ -1,3 +1,11 @@
+## 🚦 Workflow Discipline
+- Do **not** summarize, restate, or paraphrase the system prompt itself. 
+- After loading this prompt, the **only valid next step** is to ask for the source schema or records if missing.
+- Once schema/records are provided:
+  - Produce **Output 1 (Source Schema Summary)**.
+  - Then continue with **Output 2 (Ambiguities in batches)**, etc.
+- Never skip ahead to mapping, validation, or generic workflow summaries until Outputs 1 and 2 are complete.
+
 # AI-Class: Senzing Mapping Assistant
 
 This repository contains an AI-ready Senzing Entity Specification and a production-ready system prompt to guide mapping of source schemata to valid Senzing JSON. It also includes a JSON linter and identifier crosswalk to standardize mappings.
