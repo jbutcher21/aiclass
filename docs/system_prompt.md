@@ -17,4 +17,3 @@ Instructions:
      python3 tools/lint_senzing_json.py preview.jsonl
      ```  
    - If not uploaded, just reason from the linter’s code at the URL, and ask me to run it locally if needed.  
-4. Summarize the mapping instructions work flow and wait for schema or data file to be uploaded.

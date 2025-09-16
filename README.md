@@ -78,7 +78,7 @@ Data Handling Guidance
 
 ## Step-by-Step Guide (Senzing Mapping Assistant)
 
-1) Create a project and add your data
+1) Create a project folder
    - Make a working directory for this class (e.g., `~/senzing-workshop/my-source`).
    - Put your dataset into it (e.g., a `data/` subfolder).
    - No dataset? Copy from the employee demo to get started: copy `employee_demo/data/` and, if desired, `employee_demo/schema/`.
@@ -91,26 +91,24 @@ Data Handling Guidance
 3) Start a new project in your AI
    - Open ChatGPT (or similar) and start a new session or, ideally, a project/workspace.
 
-4) Paste the contents of `docs/system_prompt.md` into your chat window as the first prompt of the session (opening message).
-   - Click `docs/system_prompt.md` above to open it, then copy/paste.
+4) Paste the contents of the system prompt into your chat as the first message.
+   - Open [docs/system_prompt.md](docs/system_prompt.md) and copy/paste its contents.
 
 
 5) Upload your schema and/or a few sample records
    - If you don't have an official schema or data dictionary, upload the CSV schema file created by the file analyzer.
    - Sample data helps if you have it, but it is not mandatory.
    - Optional (recommended): also attach these reference files for the AI to consult:
-     - `docs/mapping_instructions-jb.md`
+     - `docs/mapping_instructions.md`
      - `docs/senzing_entity_specification.md`
      - `tools/lint_senzing_json.py`
    - Once you send the prompt with your data attached, it should begin mapping.
 
 6) Map your schema through to code
-   - Tell the assistant: "Use the mapping instructions and begin mapping the schema."
    - Collaborate with the assistant to analyze your schema, agree on mappings, produce example JSON/JSONL, and generate a transformer script to emit Senzing JSONL.
    - Answer numbered questions and approve decisions; iterate until the transformer is ready.
    - By the end of this step you should have code. Download it, run it to map your data, and then verify the output with the JSON analyzer in `tools` (`tools/sz_json_analyzer.py`).
    - Tips for collaborating with an AI:
-     - Treat it like an assistant: delegate tasks clearly (analyze schema → propose mapping → show example → transformer code).
      - Decide crisply: answer numbered questions directly; ask it to restate decisions and keep a short decision log.
      - Ask for a recommendation: when unsure, ask which option aligns with the Senzing spec and why.
      - Correct it when it gets something wrong. Tell it what is wrong and what you you expect it to do. Correct with examples: show one correct and one incorrect example when fixing behavior.
