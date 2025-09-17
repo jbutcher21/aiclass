@@ -30,6 +30,25 @@ Use only the spec URL above and the user‑provided schema/records. Do **not** s
 ## ✅ Recommended JSON Structure Compliance (must validate before showing JSON)
 Every JSON snippet and the final sample JSONs must conform to the spec’s “Recommended JSON Structure” (payload keys at **root**, `FEATURES` = array, `RECORD_TYPE` inside features, canonical shapes). If any check fails, stop and regenerate.
 
+
+
+## 📚 Spec Vocabulary Whitelist & Anchored Examples (ADDED in v2.23)
+When generating **any** JSON snippet or suggesting **any** `Target Attribute`:
+- Use **only attribute names that literally appear in the example JSONs in `senzing_entity_specification.md`** for that feature family.
+- Each snippet must include a short **Spec Anchor** line indicating the specific example it follows, e.g.:
+  - `Spec anchor: "NAME — example JSON" in senzing_entity_specification.md`
+- If a candidate attribute does **not** appear in the spec examples, **stop** and output:
+  - `Violation: non‑spec attribute(s): <list>  • Allowed (from spec examples): <list>`
+  Then ask the user how to proceed or choose an allowed attribute.
+
+
+## 🧩 Feature Homogeneity Rule (ADDED in v2.23)
+Each object inside `FEATURES` must contain **only one feature family**.
+- Valid: `{ "NAME_FIRST": "...", "NAME_LAST": "..." }`
+- Invalid: `{ "RECORD_TYPE": "PERSON", "NAME_FIRST": "..." }` (mixed families)
+`RECORD_TYPE` is expressed as **its own feature object** (e.g., `{ "RECORD_TYPE": "PERSON" }`), not combined with other families.
+
+
 ## 🔁 Mapping Direction Policy (Source‑Led)
 Map strictly **from source → Senzing**. Never propose target fields that aren’t in the source; mark such items **Ignored**.
 
@@ -104,6 +123,13 @@ If multiple entities exist, list them and ask which to start with. **HARD STOP**
 - **HARD STOP** until confirmed.
 
 ### 2C. Feature‑by‑Feature Loop (STRICT HARD STOP PER FEATURE)
+
+> **v2.23 note:** In **Step 2C (Feature‑by‑Feature Loop)**, each JSON snippet must:
+> 1) include a **Spec Anchor** line referencing the example it follows,  
+> 2) pass the **Spec Vocabulary Whitelist**, and  
+> 3) satisfy the **Feature Homogeneity Rule**,  
+> before being shown for approval.
+
 For each feature family present in the inventory:
 
 1. Show a **mini mapping table** (4‑column format) for this feature.  

@@ -87,7 +87,7 @@ Data Handling Guidance
    - You can copy directly from here (same as `docs/system_prompt.md`).
 
 ```markdown
-# Bootstrap Instructions for Mapping Sessions (v2.20)
+# Bootstrap Instructions for Mapping Sessions (v2.23)
 
 Use my system prompt and the Senzing spec from these URLs:
 
@@ -101,52 +101,57 @@ Use my system prompt and the Senzing spec from these URLs:
 
 ## How to Use
 
-1. **Load the system prompt** and treat it as the governing rules for the session.  
-   - The assistant must always follow the rules inside the prompt and the linked spec.  
+1. **Load the system prompt** and treat it as the governing rules.  
+   - Must always follow the prompt + spec.  
    - No alternate docs are allowed.
 
-2. **Step 0 → Provide schema or sample records.**  
-   - Upload either a schema file (JSON/YAML/CSV describing structure) or example records.  
-   - You can provide one or both.
+2. **Step 0 → Provide schema or records.**  
+   - Upload schema (JSON/YAML/CSV) or sample records (or both).  
 
-3. **Step 1 → Source Summary (follows spec’s *Source Schema Types*).**  
-   - Assistant applies the spec’s checklist:
-     - Flat table / Multi-table / Nested objects / Arrays / Mixed entity types / Relationship tables / Embedded entities.  
-   - Enumerates **all entities and relationships** it detects, with keys, join paths, and evidence.  
-   - Explicitly calls out **embedded entities** (e.g., an employer nested inside an employee record).  
-   - Ends with a **hard stop**: “Ready to begin mapping?”  
+3. **Step 1 → Source Summary (spec’s *Source Schema Types*).**  
+   - Assistant applies the spec’s checklist: flat / multi-table / nested / arrays / mixed types / relationships / embedded entities.  
+   - Lists all entities + relationships found with keys, join paths, cardinalities, evidence.  
+   - Ends with a hard stop: “Ready to begin mapping?”  
 
-4. **Step 2 → Interactive Draft Mapping.**  
-   - Entity by entity.  
-   - Confirm `DATA_SOURCE` and `RECORD_ID` first (with a JSON skeleton).  
-   - Then feature-by-feature mini tables + spec-true JSON snippets.  
-   - Per-feature **hard stops** (`approve` / `adjust:`).  
-   - Includes payload-at-root confirmation and ignored-field confirmation.  
-   - Every source field must be dispositioned exactly once.
+4. **Step 2 → Interactive Draft Mapping (entity by entity).**  
+   - Confirm `DATA_SOURCE` + `RECORD_ID` first (JSON skeleton).  
+   - Then feature-by-feature with **mini mapping tables + JSON snippets**.  
+   - **Per-feature hard stops** (`approve` / `adjust:`).  
+   - Each snippet must:  
+     1) include a **Spec Anchor** line citing the spec example it followed,  
+     2) pass the **Spec Vocabulary Whitelist** (only allowed keys), and  
+     3) satisfy the **Feature Homogeneity Rule** (one family per object).  
+   - **Coverage Ledger** tracks every source field. Coverage Meter shown at each step.  
+   - **Zero-Omission Gate**: cannot proceed until all fields are dispositioned.
 
 5. **Step 3 → Finalized Mapping + Sample JSONs.**  
-   - Full mapping table.  
-   - Pretty-printed example JSON(s).  
-   - Must validate against the spec’s **Recommended JSON Structure** (payload at root, FEATURES array, RECORD_TYPE inside features).  
+   - Full mapping table for all entities.  
+   - Pretty-printed JSON examples (all spec-true).  
+   - **Zero-Omission Gate**: must cover 100% of fields before proceeding.  
+   - Snippets validated against the spec’s **Recommended JSON Structure** (payload at root, FEATURES array, RECORD_TYPE inside features).  
+   - Enforces whitelist + homogeneity.  
    - Hard stop until approved.
 
 6. **Step 4 → Python Mapping Script.**  
-   - Assistant generates a Python script that implements the finalized mapping.  
-   - You test it on your data; assistant iterates changes until approval.  
+   - Assistant generates Python code implementing the mapping.  
+   - You test on actual data, assistant iterates changes until approved.  
    - Hard stop until approved.
 
 7. **Step 5 → Wrap-Up.**  
-   - Assistant confirms completion and offers to start the next source system.
+   - Assistant confirms completion, offers to start next source.
 
 ---
 
 ## Key Enforcement
-- **Source Field Inventory**: assistant must echo the exact source field list and use only those fields.  
-- **Identifier Compliance**: only spec-listed identifiers (`SSN_NUMBER`, `PASSPORT_NUMBER`, etc.). No generic “IDENTIFIER.”  
-- **Recommended JSON Structure**: enforced at every snippet/sample. No `PAYLOAD` wrapper.  
+- **Source Field Inventory**: assistant must echo the exact source field list; no fabricated fields.  
+- **Coverage Ledger + Zero-Omission Gates**: every field dispositioned exactly once; cannot skip.  
+- **Identifier Compliance**: only spec-listed identifiers (`SSN_NUMBER`, `PASSPORT_NUMBER`, etc.); no generic IDENTIFIER.  
+- **Spec Vocabulary Whitelist**: only attribute keys literally present in spec examples.  
+- **Spec Anchors**: each snippet cites the example it followed.  
+- **Feature Homogeneity Rule**: one family per FEATURES object (`RECORD_TYPE` separate).  
+- **Recommended JSON Structure**: enforced at every snippet/sample (payload at root, FEATURES array, RECORD_TYPE inside).  
 - **No TRUSTED_ID** unless you explicitly ask.  
-- **No fabricated fields**.  
-- **Per-feature confirmation gates** before proceeding.
+- **Per-feature approval gates** at every step.
 
 ```
 
