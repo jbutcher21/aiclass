@@ -2,12 +2,41 @@
 
 This repository contains an AI-ready Senzing Entity Specification and a production-ready system prompt to guide mapping of source schemata to valid Senzing JSON. It also includes a JSON linter and identifier crosswalk to standardize mappings.
 
+## Prerequisites
+
+This is a hands-on session where you will learn how to map data to Senzing using AI. Each participant should come prepared so we can move quickly and focus on solving your real-world mapping challenges.
+
+What to bring:
+- Laptop: each participant needs their own laptop (Mac/Windows).
+- AI account: a paid ChatGPT account or another paid AI assistant. Let us know if you already use another provider and want to use it.
+- AI app/interface: the ChatGPT app or your preferred AI app. For technical users, it’s fine if you already have an AI chat integrated with VS Code.
+- Your data file: bring a real dataset you want to map (CSV, JSON, etc.). Aim for a representative sample that’s safe to use in class. If you can’t share production data, bring a small, sanitized sample.
+- Python 3.7 or later: needed to run the mapping/validation code the AI will generate.
+  - Verify: `python3 --version` (or `python --version` on Windows).
+- Senzing environment (for final validation): we will load your mapped JSON into Senzing.
+  - Recommended: Docker, to use Senzing’s prebuilt containers.
+  - Verify: `docker --version` (if you plan to run locally with containers).
+  - See “Senzing Docker Quickstart” below; instructors can help if needed.
+
+Notes
+- We want you to solve a real problem. Bring a dataset and context so we can map to Senzing in a way that’s meaningful to your use case.
+- Keep sensitive data safe. Prefer samples or de-identified subsets when possible.
+
+## Senzing Docker Quickstart
+- Install Docker Desktop (Mac/Windows) and complete the first-run setup.
+- Verify Docker is running: `docker --version` and `docker run hello-world`.
+- Ensure at least 4 GB RAM is allocated to Docker (Settings → Resources).
+- Create a working folder for workshop files (e.g., `~/senzing-workshop`).
+- We will provide a `docker compose` file in class to start required Senzing services and a simple loader.
+- If you cannot install Docker, let us know in advance; we will provide alternatives during the session.
+
 ## What’s Inside
 
 ### Documents folder
 
-- [docs/system_prompt-chatgpt.md](docs/system_prompt-chatgpt.md): system prompt to load into your AI assistant.
-- [docs/senzing_entity_spec.md](docs/senzing_entity_spec.md): authoritative, AI-ready Senzing Entity Spec (this repo is the source of truth).
+- [docs/system_prompt.md](docs/system_prompt.md): system prompt to load into your AI assistant (authority, operating rules).
+- [docs/mapping_instructions.md](docs/mapping_instructions.md): master mapping instructions/prompt with rules, templates, and examples.
+- [docs/senzing_entity_specification.md](docs/senzing_entity_specification.md): authoritative, AI-ready Senzing Entity Spec (this repo is the source of truth).
 - [docs/identifier_crosswalk.json](docs/identifier_crosswalk.json): canonical identifier types, aliases, and mapping guidance.
 - [docs/identifier_lookup_log.md](docs/identifier_lookup_log.md): template to record curated identifier lookups (no PII).
 
@@ -33,34 +62,123 @@ This repository contains an AI-ready Senzing Entity Specification and a producti
   - Path: `tools/sz_json_analyzer.py`
   - Purpose: validates/inspects Senzing JSON/JSONL; highlights mapped vs unmapped attributes, uniqueness/population, warnings, and errors.
   - Run: `python3 tools/sz_json_analyzer.py -i path/to/output.jsonl -o path/to/report.csv`
+  - Docs: https://github.com/senzing-garage/sz-json-analyzer
+
+## Step-by-Step Guide (Senzing Mapping Assistant)
 
 Data Handling Guidance
 - Do not upload full datasets to an AI. Share schema extracts, field lists, small samples, or analyzer summaries instead.
-- Use the File Analyzer to produce schema/stats, then provide that summary to the assistant during mapping.
+- If you don't already have a schema, use the File Analyzer in the tools directory to produce a schema and stats summary, then provide that summary to the assistant during mapping (`tools/file_analyzer.py`).
 
-## Quick Start (Use with your AI of choice)
-1) Load the system prompt
-   - Option A: Paste the contents of `docs/system_prompt-chatgpt.md` into the AI’s “system” message.
-   - Option B: Provide the raw URL and ask the AI to fetch it (if supported):
-     - System Prompt (raw): https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/system_prompt-chatgpt.md
-2) Supply your source schema as context
-   - Describe tables/files, fields, keys, arrays/sub-docs, and any relationship/link tables.
-   - No schema? Use the file analyzer to profile your data and derive one:
+1) Create a project folder
+   - Make a working directory for this class (e.g., `~/senzing-workshop/my-source`).
+   - Put your dataset into it (e.g., a `data/` subfolder).
+   - No dataset? Copy from the employee demo to get started: copy `employee_demo/data/` and, if desired, `employee_demo/schema/`.
+
+2) Generate a schema with the File Analyzer
+   - If you don’t have a schema, create one from your file:
      - `python3 tools/file_analyzer.py -i path/to/data.csv -o path/to/schema.csv`
-3) Map your schema through to code
+   - Place the output schema (e.g., `schema.csv`) in your project (e.g., a `schema/` subfolder).
+
+3) Start a new project in your AI
+   - Open ChatGPT (or similar) and start a new session or, ideally, a project/workspace.
+
+4) Paste the following “Bootstrap Instructions” into your chat as the first message
+   - You can copy directly from here (same as `docs/system_prompt.md`).
+
+```markdown
+# Bootstrap Instructions for Mapping Sessions (v2.24)
+
+Use my system prompt and the Senzing spec from these URLs:
+
+- **System Prompt (rules/workflow):**  
+  https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_instructions_v2.24.md  
+
+- **Senzing Entity Specification (single source of truth):**  
+  https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/senzing_entity_specification.md  
+
+---
+
+## How to Use
+
+1. **Load the system prompt** and treat it as the governing rules.  
+   - Must always follow the prompt + spec.  
+   - No alternate docs are allowed.
+
+2. **Step 0 → Provide schema or records.**  
+   - Upload schema (JSON/YAML/CSV) or sample records (or both).  
+
+3. **Step 1 → Source Summary (spec’s *Source Schema Types*).**  
+   - Assistant applies the spec’s checklist: flat / multi‑table / nested / arrays / mixed types / relationships / embedded entities.  
+   - Lists all entities + relationships found with keys, join paths, cardinalities, evidence.  
+   - Ends with a hard stop: “Ready to begin mapping?”  
+
+4. **Step 2 → Interactive Draft Mapping (entity by entity).**  
+   - Confirm `DATA_SOURCE` + `RECORD_ID` first (JSON skeleton).  
+   - Then feature‑by‑feature with **mini mapping tables + JSON snippets**.  
+   - **Per‑feature hard stops** (`approve` / `adjust:`).  
+   - Each snippet must:  
+     1) include a **Spec Anchor** line citing the spec example it followed,  
+     2) pass the **Spec Vocabulary Whitelist** (only allowed keys), and  
+     3) satisfy the **Feature Object Rule** (one object per feature, attributes together).  
+   - **Coverage Ledger** tracks every source field. Coverage Meter shown at each step.  
+   - **Zero‑Omission Gate**: cannot proceed until all fields are dispositioned.
+
+5. **Step 3 → Finalized Mapping + Sample JSONs.**  
+   - Full mapping table for all entities.  
+   - Pretty‑printed JSON examples (all spec‑true).  
+   - **Zero‑Omission Gate**: must cover 100% of fields before proceeding.  
+   - Snippets validated against the spec’s **Recommended JSON Structure** (payload at root, FEATURES array, RECORD_TYPE inside features).  
+   - Enforces whitelist + homogeneity.  
+   - Hard stop until approved.
+
+6. **Step 4 → Python Mapping Script.**  
+   - Assistant generates Python code implementing the mapping.  
+   - You test on actual data, assistant iterates changes until approved.  
+   - Hard stop until approved.
+
+7. **Step 5 → Wrap‑Up.**  
+   - Assistant confirms completion, offers to start next source.
+
+---
+
+## Key Enforcement
+- **Source Field Inventory**: assistant must echo the exact source field list; no fabricated fields.  
+- **Coverage Ledger + Zero‑Omission Gates**: every field dispositioned exactly once; cannot skip.  
+- **Identifier Compliance**: only spec‑listed identifiers (`SSN_NUMBER`, `PASSPORT_NUMBER`, etc.); no generic IDENTIFIER.  
+- **Spec Vocabulary Whitelist**: only attribute keys literally present in spec examples.  
+- **Spec Anchors**: each snippet cites the example it followed.  
+- **Feature Object Rule**: one feature per object; attributes together.  
+- **Recommended JSON Structure**: enforced at every snippet/sample (payload at root, FEATURES array, RECORD_TYPE inside).  
+- **No TRUSTED_ID** unless you explicitly ask.  
+- **Per‑feature approval gates** at every step.
+
+```
+
+
+5) Upload your schema and/or a few sample records
+   - If you don't have an official schema or data dictionary, upload the CSV schema file created by the file analyzer.
+   - Sample data helps if you have it, but it is not mandatory.
+   - Optional (recommended): also attach these reference files for the AI to consult:
+     - `docs/mapping_instructions.md`
+     - `docs/senzing_entity_specification.md`
+     - `tools/lint_senzing_json.py`
+   - Once you send the prompt with your data attached, it should begin mapping.
+
+6) Map your schema through to code
    - Collaborate with the assistant to analyze your schema, agree on mappings, produce example JSON/JSONL, and generate a transformer script to emit Senzing JSONL.
    - Answer numbered questions and approve decisions; iterate until the transformer is ready.
+   - By the end of this step you should have code. Download it, run it to map your data, and then verify the output with the JSON analyzer in `tools` (`tools/sz_json_analyzer.py`).
    - Tips for collaborating with an AI:
-     - Treat it like an assistant: delegate tasks clearly (analyze schema → propose mapping → show example → transformer code).
      - Decide crisply: answer numbered questions directly; ask it to restate decisions and keep a short decision log.
      - Ask for a recommendation: when unsure, ask which option aligns with the Senzing spec and why.
      - Correct it when it gets something wrong. Tell it what is wrong and what you you expect it to do. Correct with examples: show one correct and one incorrect example when fixing behavior.
      - Keep context tight: if the thread drifts, repost the key schema snippet and goals.
-4) Generate Senzing JSON output
+7) Generate Senzing JSON output
    - Run the transformer you built with the assistant to produce JSONL files.
    - Example: `python3 transform_your_source.py --input path/to/source.csv --output path/to/output.jsonl`
    - Ensure one record per entity with all FEATURES and relationships.
-5) Validate outputs
+8) Validate outputs
    - Lint for schema correctness first:
      - Local file: `python3 tools/lint_senzing_json.py path/to/output.jsonl`
      - Raw URL (for remote use): https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/lint_senzing_json.py
@@ -68,12 +186,10 @@ Data Handling Guidance
      - `python3 tools/sz_json_analyzer.py -i path/to/output.jsonl -o path/to/report.csv`
      - Shows recognized vs. unmapped features, population and uniqueness percents, and top values post-mapping.
 
-Prerequisites (minimal)
-- Python 3.8+
-- For analyzer table output: `pip install prettytable` (optional)
-
 ## Important Links (Raw)
-- System Prompt: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/system_prompt-chatgpt.md
-- Senzing Entity Spec: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/senzing_entity_spec.md
+- System Prompt: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/system_prompt.md
+- Mapping Instructions: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_instructions.md
+- Senzing Entity Spec: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/senzing_entity_specification.md
 - Linter: https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/lint_senzing_json.py
 - Identifier Crosswalk: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/identifier_crosswalk.json
+- JSON Analyzer Docs (Senzing Garage): https://github.com/senzing-garage/sz-json-analyzer
