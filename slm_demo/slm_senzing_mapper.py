@@ -18,9 +18,9 @@ class OllamaSenzingMapper:
         self.model = "mistral:7b-instruct-q4_K_M"
         # self.model = "tinyllama"
         
-    def create_mapping_prompt(self, schema_info: str, sample_data: List[Dict]) -> str:
+    def create_mapping_prompt(self, csv_file: str, schema_info: str, sample_data: List[Dict]) -> str:
         """Create a comprehensive prompt for the SLM to generate mapping code."""
-        
+
         prompt = f"""You are a data mapping expert. Generate Python code to convert CSV records to Senzing JSON format.
 
         INPUT SCHEMA:
@@ -29,23 +29,60 @@ class OllamaSenzingMapper:
         SAMPLE INPUT RECORDS (first 3 rows):
         {json.dumps(sample_data[:3], indent=2)}
 
-        SENZING JSON REQUIREMENTS:
-        1. Each record must have DATA_SOURCE (use "EMPLOYEES") and RECORD_ID (use emp_num)
-        2. Map person names: last_name→NAME_LAST, first_name→NAME_FIRST, middle_name→NAME_MIDDLE
-        3. Map address: addr1→ADDR_LINE1, city→ADDR_CITY, state→ADDR_STATE, zip→ADDR_POSTAL_CODE
-        4. Map identifiers: ssn→SSN_NUMBER, home_phone→PHONE_NUMBER, dob→DATE_OF_BIRTH
-        5. Map employment: employer_name→EMPLOYER, job_title→JOB_TITLE
-        6. Handle multiple IDs: if id_type="DL" map to DRIVERS_LICENSE_NUMBER with DRIVERS_LICENSE_STATE
-        7. If id_type="PP" map to PASSPORT_NUMBER with PASSPORT_COUNTRY
-        8. Handle manager relationships using REL_ANCHOR_DOMAIN="EMP_ID" and REL_POINTER_DOMAIN="EMP_ID"
-        9. Skip null/empty values
-        10. Output one JSON object per line (JSONL format)
+        CRITICAL REQUIREMENTS - Follow these exactly:
 
-        Generate ONLY the Python function that takes a CSV row dict and returns a Senzing JSON dict.
-        You MUST use the provided CSV file, do NOT make one up!
-        Include all necessary package imports, but only use standard libraries.
-        The function should be named 'map_to_senzing' and handle all mappings cleanly.
-        Include proper error handling and data cleaning.
+        1. FUNCTION SIGNATURE: Create a function named 'map_to_senzing' that takes a CSV row dict and returns a Senzing dict (NOT a JSON string).
+
+        2. SENZING JSON STRUCTURE - Use this exact format:
+        {{
+            "DATA_SOURCE": "EMPLOYEES",
+            "RECORD_ID": row["emp_num"],
+            "FEATURES": [
+                {{"RECORD_TYPE": "PERSON"}},
+                {{"NAME_LAST": "Smith", "NAME_FIRST": "John"}},
+                {{"DATE_OF_BIRTH": "1980-01-15"}},
+                {{"ADDR_LINE1": "123 Main St", "ADDR_CITY": "Las Vegas", "ADDR_STATE": "NV"}},
+                {{"PHONE_NUMBER": "702-555-1234"}},
+                {{"SSN_NUMBER": "123-45-6789"}}
+            ]
+        }}
+
+        3. ERROR HANDLING RULES:
+        - Always use row.get('field_name', '') to access fields safely
+        - Always check if values exist and are not empty before using them
+        - Never use .split() without checking if the delimiter exists first
+        - Use defensive programming - assume data might be missing or malformed
+
+        4. FIELD MAPPING RULES:
+        - Map last_name→NAME_LAST, first_name→NAME_FIRST, middle_name→NAME_MIDDLE (in same FEATURES object)
+        - Map addr1→ADDR_LINE1, city→ADDR_CITY, state→ADDR_STATE, zip→ADDR_POSTAL_CODE (in same FEATURES object)
+        - Map ssn→SSN_NUMBER, home_phone→PHONE_NUMBER, dob→DATE_OF_BIRTH (each in separate FEATURES objects)
+        - Map employer_name→EMPLOYER
+        - For id_type="DL": map to DRIVERS_LICENSE_NUMBER and DRIVERS_LICENSE_STATE
+        - For id_type="PP": map to PASSPORT_NUMBER with PASSPORT_COUNTRY="US"
+
+        5. RELATIONSHIP HANDLING:
+        - If manager_id exists, add REL_ANCHOR_DOMAIN="EMP_ID" and REL_ANCHOR_KEY=emp_num
+        - Add REL_POINTER_DOMAIN="EMP_ID", REL_POINTER_KEY=manager_id, REL_POINTER_ROLE="REPORTS_TO"
+
+        6. CODE REQUIREMENTS:
+        - Only use standard library imports
+        - Return a Python dictionary, not a JSON string
+        - Handle missing/empty values gracefully
+        - Don't modify the input row dictionary
+        - Each feature type goes in a separate object in the FEATURES array
+        - Only add FEATURES objects that have actual data
+
+        EXAMPLE SAFE FIELD ACCESS:
+        ```python
+        if row.get('id_number') and '-' in row['id_number']:
+            parts = row['id_number'].split('-', 1)  # Only split once
+            if len(parts) >= 2:
+                dl_number = parts[0].strip()
+                dl_state = parts[1].strip()
+        ```
+
+        Generate complete, working Python code with proper error handling. Do NOT make up any data or fields.
 """
         
         return prompt
@@ -151,7 +188,7 @@ class OllamaSenzingMapper:
                     break
         
         print("Creating prompt for SLM...")
-        prompt = self.create_mapping_prompt(schema_info, sample_data)
+        prompt = self.create_mapping_prompt(csv_file, schema_info, sample_data)
         
         print("Querying Ollama (this may take a moment)...")
         response = self.query_ollama(prompt)
