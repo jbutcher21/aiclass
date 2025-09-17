@@ -187,3 +187,84 @@ Congratulate the user and state: **“I’m ready for the next source to map whe
 - Prefer real sample values; otherwise schema examples; otherwise field names.  
 - Never browse alternate docs.  
 - `TRUSTED_ID` only if explicitly requested.
+
+
+---
+
+## Feature Object Rule (ENFORCED)
+**One *feature* per object in `FEATURES` — all attributes for that feature live together in that one object.**  
+Do **not** split a feature’s attributes across multiple objects. Do **not** mix other features into the same object.
+
+### Correct (GOOD) examples
+- **RECORD_TYPE is its own object**
+```json
+{ "RECORD_TYPE": "PERSON" }
+```
+- **Person name, parsed — one NAME object containing its attributes**
+```json
+{ "NAME_FIRST": "Robert", "NAME_MIDDLE": "J", "NAME_LAST": "Smith", "NAME_TYPE": "PRIMARY" }
+```
+- **Full name only — one NAME object**
+```json
+{ "NAME_FULL": "Robert J Smith" }
+```
+- **Organization name — one NAME object (no person fields mixed)**
+```json
+{ "NAME_ORG": "Acme Tire Inc.", "NAME_TYPE": "PRIMARY" }
+```
+- **Address, parsed — one ADDRESS object containing its attributes**
+```json
+{ "ADDR_LINE1": "123 E ST STE E", "ADDR_CITY": "Washougal", "ADDR_STATE": "WA", "ADDR_POSTAL_CODE": "98671", "ADDRESS_TYPE": "COMPANY" }
+```
+- **Address, full only — one ADDRESS object**
+```json
+{ "ADDRESS_FULL": "123 E ST STE E, Washougal, WA 98671" }
+```
+
+### Incorrect (BLOCKED) patterns
+- ❌ Splitting a feature’s attributes across multiple objects:  
+  `{"NAME_FIRST":"Robert"}` and `{"NAME_LAST":"Smith"}` in separate objects.  
+- ❌ Mixing features in one object:  
+  `{"RECORD_TYPE":"PERSON","NAME_FIRST":"Robert"}`.  
+- ❌ Mixing `ADDRESS_FULL` with parsed `ADDR_*` in the same object.  
+- ❌ Mixing `NAME_FULL` with parsed name fields in the same object.
+
+### Multi‑value rule
+If a feature has multiple values, use **multiple objects** — one per value.  
+Example: two emails → `{"EMAIL_ADDRESS":"a@x.com"}` and `{"EMAIL_ADDRESS":"b@y.com"}` as two separate objects (no arrays inside a single object).
+
+### No‑null rule
+Do **not** include null/empty attributes just to “reserve” keys. Omit them.
+
+### Whitelist rule
+Use **only** keys that literally appear in the Senzing Entity Specification.
+
+### Identifier preference
+Prefer **specific** identifiers (e.g., `DRLIC_NUMBER`, `PASSPORT_NUMBER`, `NPI_NUMBER`) over generic (`NATIONAL_ID`, `TAX_ID_NUMBER`, `OTHER_ID`) when both are present.
+
+### Feature Object Rule (ENFORCED)
+- **One feature per object in `FEATURES`** — all attributes for that feature live together in that one object.
+- Do **not** split a feature’s attributes across multiple objects.
+- Do **not** mix different features in the same object (e.g., RECORD_TYPE + NAME).
+- Parsed vs full cannot be mixed (NAME_FULL vs NAME_FIRST/NAME_LAST, ADDRESS_FULL vs ADDR_*).
+
+**GOOD examples:**
+```json
+{ "RECORD_TYPE": "PERSON" }
+{ "NAME_FIRST": "Robert", "NAME_LAST": "Smith", "NAME_TYPE": "PRIMARY" }
+{ "NAME_FULL": "Robert J Smith" }
+{ "NAME_ORG": "Acme Tire Inc.", "NAME_TYPE": "PRIMARY" }
+{ "ADDR_LINE1": "123 E ST", "ADDR_CITY": "Washougal", "ADDR_STATE": "WA", "ADDR_POSTAL_CODE": "98671" }
+{ "ADDRESS_FULL": "123 E ST, Washougal, WA 98671" }
+```
+
+**BAD patterns (blocked):**
+- ❌ `{"NAME_FIRST":"Robert"}` and `{"NAME_LAST":"Smith"}` as separate objects
+- ❌ `{"RECORD_TYPE":"PERSON","NAME_FIRST":"Robert"}`
+- ❌ Mixing `ADDRESS_FULL` with parsed `ADDR_*`
+- ❌ Mixing `NAME_FULL` with parsed fields
+
+**Multi‑value rule:** Multiple values → multiple objects (e.g., two EMAIL_ADDRESS objects).  
+**No‑null rule:** Omit null/empty attributes, don’t reserve keys.  
+**Whitelist rule:** Only use keys literally listed in the spec.  
+**Identifier preference:** Prefer specific identifiers (DRLIC, PASSPORT, NPI) over generic ones.
