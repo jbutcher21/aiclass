@@ -87,72 +87,67 @@ Data Handling Guidance
    - You can copy directly from here (same as `docs/system_prompt.md`).
 
 ```markdown
-# Bootstrap Instructions for Mapping Sessions (v2.14, no linter)
+# Bootstrap Instructions for Mapping Sessions (v2.20)
 
-Use my **system prompt** from this URL:
+Use my system prompt and the Senzing spec from these URLs:
 
 - **System Prompt (rules/workflow):**  
-  https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_instructions.md
+  https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_instructions.md  
+
+- **Senzing Entity Specification (single source of truth):**  
+  https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/senzing_entity_specification.md  
 
 ---
 
-## Instructions
+## How to Use
 
-1. **Load the system prompt** and treat it as the governing rules for this session.  
-   - Paste the contents of `systemprompt_v2_14.md` into a new ChatGPT conversation.  
-   - This locks in the workflow and guardrails.
+1. **Load the system prompt** and treat it as the governing rules for the session.  
+   - The assistant must always follow the rules inside the prompt and the linked spec.  
+   - No alternate docs are allowed.
 
-2. **Provide your source schema and/or sample records.**  
-   - Either is acceptable.  
-   - If both are available, provide both.
+2. **Step 0 → Provide schema or sample records.**  
+   - Upload either a schema file (JSON/YAML/CSV describing structure) or example records.  
+   - You can provide one or both.
 
-3. **Follow the workflow (hard stops at each stage):**
+3. **Step 1 → Source Summary (follows spec’s *Source Schema Types*).**  
+   - Assistant applies the spec’s checklist:
+     - Flat table / Multi-table / Nested objects / Arrays / Mixed entity types / Relationship tables / Embedded entities.  
+   - Enumerates **all entities and relationships** it detects, with keys, join paths, and evidence.  
+   - Explicitly calls out **embedded entities** (e.g., an employer nested inside an employee record).  
+   - Ends with a **hard stop**: “Ready to begin mapping?”  
 
-   - **Output 1: Source Summary**  
-     - High-level summary only.  
-     - No mapping yet.  
-     - Ends by asking if you’re ready to begin mapping.  
+4. **Step 2 → Interactive Draft Mapping.**  
+   - Entity by entity.  
+   - Confirm `DATA_SOURCE` and `RECORD_ID` first (with a JSON skeleton).  
+   - Then feature-by-feature mini tables + spec-true JSON snippets.  
+   - Per-feature **hard stops** (`approve` / `adjust:`).  
+   - Includes payload-at-root confirmation and ignored-field confirmation.  
+   - Every source field must be dispositioned exactly once.
 
-   - **Output 2: Interactive Draft Mapping** (entity-by-entity, feature-by-feature)  
-     - Confirm `DATA_SOURCE` + `RECORD_ID` with a tiny JSON snippet (empty `FEATURES`).  
-     - For each feature family:  
-       - Show a **mini mapping table**.  
-       - Show a **JSON snippet** with just that feature.  
-       - Confirm or adjust (hard stop).  
-     - Propose **Payload attributes**, confirm.  
-     - Show **Ignored/unmapped fields**, confirm.  
-     - Every source field must be dispositioned.  
+5. **Step 3 → Finalized Mapping + Sample JSONs.**  
+   - Full mapping table.  
+   - Pretty-printed example JSON(s).  
+   - Must validate against the spec’s **Recommended JSON Structure** (payload at root, FEATURES array, RECORD_TYPE inside features).  
+   - Hard stop until approved.
 
-   - **Output 3: Finalized Mapping + Sample JSONs**  
-     - Show the **full mapping table** (strict 4-column format).  
-     - Show one **complete sample JSON** per entity.  
-     - Confirm or adjust (hard stop).  
+6. **Step 4 → Python Mapping Script.**  
+   - Assistant generates a Python script that implements the finalized mapping.  
+   - You test it on your data; assistant iterates changes until approval.  
+   - Hard stop until approved.
 
-   - **Output 4: Python Mapping Script**  
-     - Generate source-to-Senzing transformation code.  
-     - You test it on actual data.  
-     - Iterate until approved (hard stop).  
-
-   - **Output 5: Wrap-Up**  
-     - Congratulate you on completing the mapping.  
-     - End with: *“I’m ready for the next source to map whenever you are!”*
+7. **Step 5 → Wrap-Up.**  
+   - Assistant confirms completion and offers to start the next source system.
 
 ---
 
-## Standard Mapping Table Format
+## Key Enforcement
+- **Source Field Inventory**: assistant must echo the exact source field list and use only those fields.  
+- **Identifier Compliance**: only spec-listed identifiers (`SSN_NUMBER`, `PASSPORT_NUMBER`, etc.). No generic “IDENTIFIER.”  
+- **Recommended JSON Structure**: enforced at every snippet/sample. No `PAYLOAD` wrapper.  
+- **No TRUSTED_ID** unless you explicitly ask.  
+- **No fabricated fields**.  
+- **Per-feature confirmation gates** before proceeding.
 
-All mapping tables (mini and final) must use **exactly these columns**:
-
-| Source field | Feature | Target Attribute | Transformations |
-|--------------|---------|------------------|-----------------|
-
-- **Feature column values:**  
-  - `Required` → only for `DATA_SOURCE`, `RECORD_ID`  
-  - `Payload` → valid root/payload attribute (per spec)  
-  - `Ignored` → not mapped  
-  - Or the actual **feature family name** (e.g., `NAME`, `ADDRESS`, `PHONE`, `PASSPORT_NUMBER`, `SSN_NUMBER`, etc.)
-
----
 ```
 
 
