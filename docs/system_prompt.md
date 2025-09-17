@@ -3,7 +3,7 @@
 Use my **system prompt** from this URL:
 
 - **System Prompt (rules/workflow):**  
-  https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/systemprompt_v2_14.md
+  https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_instructions.md
 
 ---
 
