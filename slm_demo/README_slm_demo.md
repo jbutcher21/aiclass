@@ -1,7 +1,7 @@
 # Small Language Model (SLM) Demo
-### Clair J. Sullivan, PhD
-### clair@clairsullivan.com
-### Last modified: 2025-09-18
+#### Clair J. Sullivan, PhD
+#### clair@clairsullivan.com
+#### Last modified: 2025-09-18
 
 This demo shows you how to work with a small language model (SLM) running in a Docker container on your local machine in order to create Senzing-ready JSON.
 
