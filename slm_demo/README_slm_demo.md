@@ -34,12 +34,11 @@ This demo shows you how to work with a small language model (SLM) running in a D
 
 4. Test the model is successfully installed and running:
     ```bash
-    curl -s http://localhost:11434/api/generate \
-        -d '{
-        "model": model_name,
-        "prompt": "One-line summary of entity resolution. Keep it under 12 words.",
-        "stream": false
-        }' | jq -r .response
+    curl -s http://localhost:11434/api/generate -d '{
+    "model": "llama3.2:1b-instruct-q4_K_M",
+    "prompt": "One-line summary of entity resolution. Keep it under 12 words.",
+    "stream": false
+    }' | jq -r .response
     ```
 
 Assuming this above all runs correctly and the final step gives you a response from the SLM, you now have your SLM running as a REST API on your local machine.  We can now use this to start mapping data to Senzing JSON!
