@@ -100,6 +100,11 @@ ALLOWED_ATTRS: Dict[str, set] = {
     "ZOOMROOM": {"ZOOMROOM"},
     "INSTAGRAM": {"INSTAGRAM"},
     "WHATSAPP": {"WHATSAPP"},
+    "SIGNAL": {"SIGNAL"},
+    "TELEGRAM": {"TELEGRAM"},
+    "TANGO": {"TANGO"},
+    "VIBER": {"VIBER"},
+    "WECHAT": {"WECHAT"},
 }
 
 # Map attribute key to family for fast lookup
