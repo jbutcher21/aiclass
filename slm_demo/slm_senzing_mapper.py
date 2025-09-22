@@ -10,13 +10,13 @@ import requests
 import sys
 import os
 import csv
+import argparse
 from typing import Dict, List, Any
 
 class OllamaSenzingMapper:
-    def __init__(self, ollama_url: str = "http://localhost:11434"):
+    def __init__(self, model: str = "mistral:7b-instruct-q4_K_M", ollama_url: str = "http://localhost:11434"):
         self.ollama_url = ollama_url
-        self.model = "mistral:7b-instruct-q4_K_M"
-        # self.model = "tinyllama"
+        self.model = model
         
     def create_mapping_prompt(self, csv_file: str, schema_info: str, sample_data: List[Dict]) -> str:
         """Create a comprehensive prompt for the SLM to generate mapping code."""
@@ -67,6 +67,7 @@ class OllamaSenzingMapper:
 
         6. CODE REQUIREMENTS:
         - Only use standard library imports
+        - DO NOT IMPORT SENZING
         - Return a Python dictionary, not a JSON string
         - Handle missing/empty values gracefully
         - Don't modify the input row dictionary
@@ -259,6 +260,69 @@ if __name__ == "__main__":
             with open(output_file + ".raw", 'w') as f:
                 f.write(generated_code)
 
+
+def parse_arguments():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        description='Generate Senzing JSON mapping code using a Small Language Model'
+    )
+    
+    parser.add_argument('csv_file', 
+                       help='Path to the input CSV file containing the data to be mapped')
+    
+    parser.add_argument('schema_file', 
+                       help='Path to the schema file describing the CSV structure')
+    
+    parser.add_argument('output_file', 
+                       help='Path where the generated mapping script will be saved')
+    
+    parser.add_argument('--model', 
+                       default='mistral:7b-instruct-q4_K_M',
+                       help='Ollama model to use (default: mistral:7b-instruct-q4_K_M)')
+    
+    return parser.parse_args()
+
+
+def main():
+    """Main function to run the SLM-based mapper generator."""
+    
+    # Parse command line arguments
+    args = parse_arguments()
+    
+    # Check if Ollama is accessible
+    try:
+        response = requests.get("http://localhost:11434/api/tags")
+        if response.status_code != 200:
+            raise Exception("Ollama not responding")
+    except:
+        print("Error: Cannot connect to Ollama at http://localhost:11434")
+        print("Make sure Ollama is running with:")
+        print("docker run -d --name ollama -p 11434:11434 -v ollama:/root/.ollama ollama/ollama:latest")
+        print("\nThen pull the Mistral model:")
+        print("docker exec -it ollama ollama pull mistral:7b-instruct-q4_K_M")
+        sys.exit(1)
+    
+    # Check if files exist
+    if not os.path.exists(args.csv_file):
+        print(f"Error: CSV file not found: {args.csv_file}")
+        sys.exit(1)
+    if not os.path.exists(args.schema_file):
+        print(f"Error: Schema file not found: {args.schema_file}")
+        sys.exit(1)
+    
+    # Create output directory if it doesn't exist
+    output_dir = os.path.dirname(args.output_file)
+    if output_dir and not os.path.exists(output_dir):
+        os.makedirs(output_dir, exist_ok=True)
+    
+    # Create mapper instance and generate script
+    mapper = OllamaSenzingMapper(model=args.model)
+    mapper.generate_mapping_script(args.csv_file, args.schema_file, args.output_file)
+
+if __name__ == "__main__":
+    main()
+
+'''    
 def main():
     """Main function to run the SLM-based mapper generator."""
     
@@ -294,3 +358,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+'''
