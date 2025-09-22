@@ -86,7 +86,7 @@ There are a few things to keep in mind when creating prompts for SLMs versus LLM
 
 ## 🎯 Your Task
 
-Your task in this module is to create a prompt for the SLM that will take the employee demo data (`./employee_demo/data/us-small-employee-raw.csv`) and its associated schema (`./employee_demo/schema/us-small-employee-schema.txt`) and generate Python code that will map the CSV data to Senzing JSON.  You will begin with the code in `./slm_demo/slm_senzing_mapper.py`.  This code contains a class called `SLMSenzingMapper` that you can use to generate mapping code.  In this class, you will need to specifically pay attention to the `create_mapping_prompt` method.  This is where you will create the prompt that you will send to the SLM in order to generate the mapping code.  The code then uses `requests` to send the prompt to the SLM and get the generated code back.  
+Your task in this module is to create a prompt for the SLM that will take the employee demo data (`./employee_demo/data/us-small-employee-raw.csv`) and its associated schema (`./employee_demo/schema/us-small-employee-schema.csv`) and generate Python code that will map the CSV data to Senzing JSON.  You will begin with the code in `./slm_demo/slm_senzing_mapper.py`.  This code contains a class called `SLMSenzingMapper` that you can use to generate mapping code.  In this class, you will need to specifically pay attention to the `create_mapping_prompt` method.  This is where you will create the prompt that you will send to the SLM in order to generate the mapping code.  The code then uses `requests` to send the prompt to the SLM and get the generated code back.  
 
 In order to run the code, use the following command:
 
