@@ -21,69 +21,7 @@ class OllamaSenzingMapper:
     def create_mapping_prompt(self, csv_file: str, schema_info: str, sample_data: List[Dict]) -> str:
         """Create a comprehensive prompt for the SLM to generate mapping code."""
 
-        prompt = f"""You are a data mapping expert. Generate Python code to convert CSV records to Senzing JSON format.
-
-        INPUT SCHEMA:
-        {schema_info}
-
-        SAMPLE INPUT RECORDS (first 3 rows):
-        {json.dumps(sample_data[:3], indent=2)}
-
-        CRITICAL REQUIREMENTS - Follow these exactly:
-
-        1. FUNCTION SIGNATURE: Create a function named 'map_to_senzing' that takes a CSV row dict and returns a Senzing dict (NOT a JSON string).
-
-        2. SENZING JSON STRUCTURE - Use this exact format:
-        {{
-            "DATA_SOURCE": "EMPLOYEES",
-            "RECORD_ID": row["emp_num"],
-            "FEATURES": [
-                {{"RECORD_TYPE": "PERSON"}},
-                {{"NAME_LAST": "Smith", "NAME_FIRST": "John"}},
-                {{"DATE_OF_BIRTH": "1980-01-15"}},
-                {{"ADDR_LINE1": "123 Main St", "ADDR_CITY": "Las Vegas", "ADDR_STATE": "NV"}},
-                {{"PHONE_NUMBER": "702-555-1234"}},
-                {{"SSN_NUMBER": "123-45-6789"}}
-            ]
-        }}
-
-        3. ERROR HANDLING RULES:
-        - Always use row.get('field_name', '') to access fields safely
-        - Always check if values exist and are not empty before using them
-        - Never use .split() without checking if the delimiter exists first
-        - Use defensive programming - assume data might be missing or malformed
-
-        4. FIELD MAPPING RULES:
-        - Map last_name→NAME_LAST, first_name→NAME_FIRST, middle_name→NAME_MIDDLE (in same FEATURES object)
-        - Map addr1→ADDR_LINE1, city→ADDR_CITY, state→ADDR_STATE, zip→ADDR_POSTAL_CODE (in same FEATURES object)
-        - Map ssn→SSN_NUMBER, home_phone→PHONE_NUMBER, dob→DATE_OF_BIRTH (each in separate FEATURES objects)
-        - Map employer_name→EMPLOYER
-        - For id_type="DL": map to DRIVERS_LICENSE_NUMBER and DRIVERS_LICENSE_STATE
-        - For id_type="PP": map to PASSPORT_NUMBER with PASSPORT_COUNTRY="US"
-
-        5. RELATIONSHIP HANDLING:
-        - If manager_id exists, add REL_ANCHOR_DOMAIN="EMP_ID" and REL_ANCHOR_KEY=emp_num
-        - Add REL_POINTER_DOMAIN="EMP_ID", REL_POINTER_KEY=manager_id, REL_POINTER_ROLE="REPORTS_TO"
-
-        6. CODE REQUIREMENTS:
-        - Only use standard library imports
-        - DO NOT IMPORT SENZING
-        - Return a Python dictionary, not a JSON string
-        - Handle missing/empty values gracefully
-        - Don't modify the input row dictionary
-        - Each feature type goes in a separate object in the FEATURES array
-        - Only add FEATURES objects that have actual data
-
-        EXAMPLE SAFE FIELD ACCESS:
-        ```python
-        if row.get('id_number') and '-' in row['id_number']:
-            parts = row['id_number'].split('-', 1)  # Only split once
-            if len(parts) >= 2:
-                dl_number = parts[0].strip()
-                dl_state = parts[1].strip()
-        ```
-
-        Generate complete, working Python code with proper error handling. Do NOT make up any data or fields.
+        prompt = f"""Enter your prompt here.
 """
         
         return prompt
@@ -214,7 +152,6 @@ class OllamaSenzingMapper:
             complete_script = f'''#!/usr/bin/env python3
 """
 Auto-generated Senzing JSON mapper
-Generated using Mistral 7B via Ollama
 """
 
 import csv
