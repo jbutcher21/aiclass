@@ -74,22 +74,23 @@ Data Handling Guidance
    - Put your dataset into it (e.g., a `data/` subfolder).
    - No dataset? Copy from the employee demo to get started: copy `employee_demo/data/` and, if desired, `employee_demo/schema/`.
 
-2) Generate a schema with the File Analyzer
-   - If you don’t have a schema, create one from your file:
-     - `python3 tools/file_analyzer.py -i path/to/data.csv -o path/to/schema.csv`
+2) If you don’t have a schema: generate one with the File Analyzer
+   - Run: `python3 tools/file_analyzer.py -i path/to/data.csv -o path/to/schema.csv`
    - Place the output schema (e.g., `schema.csv`) in your project (e.g., a `schema/` subfolder).
+   - If you already have an official schema or data dictionary, skip this step.
 
-3) Start a new project in your AI
-   - Open ChatGPT (or similar) and start a new session or, ideally, a project/workspace.
-
-4) Upload the mapping docs to your chat
-   - In your new AI chat, upload these two files from this repo:
-     - `docs/senzing_entity_specification.md`
+3) Start your mapping session (choose one)
+   - Option A — SenzingGPT (no doc uploads): open https://chatgpt.com/g/g-679d39f4717c819192476201873ebc21-senzinggpt and click “Help me map my schema or data file.” The mapping docs are preloaded, so proceed to Step 4.
+   - Option B — Your AI’s chat interface: open a new chat/workspace (e.g., ChatGPT).
+   - Option C — IDE workflow (best for complex schemas): open VS Code or your preferred IDE, point it at your project folder, and use your AI assistant extension to work directly with your schema and sample data in‑repo.
+   - For Option B or C, have these files available (upload for B; add to your repo for C):
      - `docs/mapping_instructions.md`
-   - The assistant should then ask you to upload your schema (CSV schema from the analyzer, data dictionary, or a small representative sample). Once provided, it will start the guided mapping workflow.
+     - `docs/senzing_entity_specification.md`
+     - `tools/lint_senzing_json.py` 
+   - In all options, you will be prompted to upload your schema or a small representative sample. Once provided, the assistant begins the guided mapping workflow.
 
 
-5) Map your schema through to code
+4) Map your schema through to code
    - Collaborate with the assistant to analyze your schema, agree on mappings, produce example JSON/JSONL, and generate a transformer script to emit Senzing JSONL.
    - Answer numbered questions and approve decisions; iterate until the transformer is ready.
    - By the end of this step you should have code. Download it, run it to map your data, and then verify the output with the JSON analyzer in `tools` (`tools/sz_json_analyzer.py`).
@@ -98,11 +99,11 @@ Data Handling Guidance
      - Ask for a recommendation: when unsure, ask which option aligns with the Senzing spec and why.
      - Correct it when it gets something wrong. Tell it what is wrong and what you you expect it to do. Correct with examples: show one correct and one incorrect example when fixing behavior.
      - Keep context tight: if the thread drifts, repost the key schema snippet and goals.
-6) Generate Senzing JSON output
+5) Generate Senzing JSON output
    - Run the transformer you built with the assistant to produce JSONL files.
    - Example: `python3 transform_your_source.py --input path/to/source.csv --output path/to/output.jsonl`
    - Ensure one record per entity with all FEATURES and relationships.
-7) Validate outputs
+6) Validate outputs
    - Lint for schema correctness first:
      - Local file: `python3 tools/lint_senzing_json.py path/to/output.jsonl`
      - Raw URL (for remote use): https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/lint_senzing_json.py
@@ -111,6 +112,7 @@ Data Handling Guidance
      - Shows recognized vs. unmapped features, population and uniqueness percents, and top values post-mapping.
 
 ## Important Links (Raw)
+- SenzingGPT (ChatGPT): https://chatgpt.com/g/g-679d39f4717c819192476201873ebc21-senzinggpt
 - Mapping Instructions: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_instructions.md
 - Senzing Entity Spec: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/senzing_entity_specification.md
 - Linter: https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/lint_senzing_json.py
