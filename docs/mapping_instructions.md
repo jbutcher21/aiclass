@@ -33,6 +33,7 @@ A) **Spec Verification (HARD STOP)**
 
 B) **Source Inventory**
   - Enumerate 100% of source fields (count them) and structures.
+  - Show a concise summary of the source file or schema.
 
 C) **Mapping Proposal (HARD STOP)**
   - Provide table: SourceField | SenzingAttribute | Transform | Constraints | Evidence | Confidence.
@@ -77,3 +78,9 @@ OUTPUTS:
 - Include lint results (pass, warnings, errors) and user decisions.  
 - No shortcuts. No missing fields. No invented attributes.  
 - Persist artifacts with the generated code: approved mapping proposal + user instructions (README).  
+
+## 🚀 Usage
+1. Start a new ChatGPT session.  
+2. Upload `senzing_entity_specification.md`, `mapping_instructions.md`, and `lint_senzing_json.py`.  
+3. Type `go`.  
+4. AI will enter STRICT MODE and begin at Spec Verification.

@@ -155,6 +155,12 @@ def lint_record(doc: Any, where: str, *, strict: bool = True) -> List[str]:
     for k, v in doc.items():
         if k in ALLOWED_ROOT_KEYS:
             continue
+        # Check if this is a feature attribute that should not be at root level
+        if k in KEY_TO_FAMILY:
+            errors.append(
+                f"{where}: Feature attribute '{k}' must be inside FEATURES array, not at root level"
+            )
+            continue
         if not is_scalar(v):
             errors.append(
                 f"{where}: Root attribute '{k}' must be a scalar (string/number/boolean/null); no objects/arrays at root"
@@ -244,6 +250,19 @@ def lint_record(doc: Any, where: str, *, strict: bool = True) -> List[str]:
                 # Enforce allowed attributes within family
                 if kk not in allowed:
                     errors.append(f"{loc}: Attribute '{kk}' not allowed for family {fam}")
+
+    # --- Cross-feature validation: NAME_ORG and NAME_LAST conflict ---
+    has_name_org = False
+    has_name_last = False
+    for item in features:
+        if isinstance(item, dict):
+            if "NAME_ORG" in item:
+                has_name_org = True
+            if "NAME_LAST" in item:
+                has_name_last = True
+    
+    if has_name_org and has_name_last:
+        errors.append(f"{where}: Cannot have both NAME_ORG and NAME_LAST in FEATURES array; indicates confusion between person and organization")
 
     if not has_record_type:
         warnings.append(f"{where}: Missing RECORD_TYPE; include when known to prevent cross-type resolution")
