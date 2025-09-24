@@ -80,7 +80,7 @@ Data Handling Guidance
    - If you already have an official schema or data dictionary, skip this step.
 
 3) Start your mapping session (choose one)
-   - Option A — SenzingGPT (no doc uploads): open https://chatgpt.com/g/g-679d39f4717c819192476201873ebc21-senzinggpt and click “Help me map my schema or data file.” The mapping docs are preloaded, so proceed to Step 4.
+   - Option A — Prebuilt GPT (no doc uploads): open https://chatgpt.com/g/g-68c8d9a23e6c819181fe58458cc95541-senzing-mapping-assistant and click “Help me map my schema or data file.” The mapping docs are preloaded, so proceed to Step 4.
    - Option B — Your AI’s chat interface: open a new chat/workspace (e.g., ChatGPT).
    - Option C — IDE workflow (best for complex schemas): open VS Code or your preferred IDE, point it at your project folder, and use your AI assistant extension to work directly with your schema and sample data in‑repo.
    - For Option B or C, have these files available (upload for B; add to your repo for C):

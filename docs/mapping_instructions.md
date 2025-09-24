@@ -31,7 +31,7 @@ A) **Spec Verification (HARD STOP)**
   - Extract spec version; list key sections and all attributes.
   - Present summary and request user confirmation before proceeding.
 
-B) **Source Inventory**
+B) **Source Inventory (HARD STOP)**
   - Enumerate 100% of source fields (count them) and structures.
   - Show a concise summary of the source file or schema.
 
@@ -50,9 +50,11 @@ E) **Sample JSON + Lint (HARD STOP)**
   - Run `lint_senzing_json.py`; show pass/warn/error output.
   - If warnings: show verbatim; request approval or safe adjustments and re-lint.
   - If errors: analyze failures, recommend spec-compliant fixes with evidence; re-lint. If unresolved, present options (request inputs, alternative mappings, or mark BLOCKED).
+
 F) **Code Generation (post-approval)**
   - Use Python standard library only unless user approves extra dependencies.
   - Generate a CLI with `--input` (file or directory) and `--output` (file).
+  - The output should be a valid JSONL file
   - Save artifacts with the code: the finalized mapping proposal (including any additional user instructions) and a short README with run steps and linter usage.
   - Ask user to run tests and approve or request changes.
   - On acceptance, confirm completion: “Ready for the next schema.”
