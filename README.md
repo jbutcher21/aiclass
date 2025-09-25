@@ -11,7 +11,7 @@ What to bring:
 - AI account: a paid ChatGPT account or another paid AI assistant. Let us know if you already use another provider and want to use it.
 - AI app/interface: the ChatGPT app or your preferred AI app. For technical users, it’s fine if you already have an AI chat integrated with VS Code.
 - Create a working folder for workshop files (e.g., `~/bootcamp`) and pull this repository into it.
-- Your data file: bring a real dataset you want to map (CSV, JSON, etc.). Aim for a representative sample that’s safe to use in class. If you can’t share production data, bring a small, sanitized sample and put it on the bootcamp directory.
+- Your data file: bring a real dataset you want to map (CSV, JSON, etc.). Aim for a representative sample that’s safe to use in class. If you can’t share production data, bring a small, sanitized sample and put it on the ~/bootcamp directory.
 - Python 3.7 or later: needed to run the mapping/validation code the AI will generate.
   - Verify: `python3 --version` (or `python --version` on Windows).
 - Senzing environment (for final validation): we will load your mapped JSON into Senzing.
