@@ -27,7 +27,7 @@ Notes
 - Verify Docker is running: `docker --version` and `docker run hello-world`.
 - Ensure at least 4 GB RAM is allocated to Docker (Settings → Resources).
 - Create a working folder for workshop files (e.g., `~/senzing-workshop`).
-- We will provide a `docker compose` file in class to start required Senzing services and a simple loader.
+- Pull the workshop container image ahead of time: `docker pull senzing/summit-bootcamp-2025`.
 - If you cannot install Docker, let us know in advance; we will provide alternatives during the session.
 
 ## What’s Inside
