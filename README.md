@@ -10,32 +10,29 @@ What to bring:
 - Laptop: each participant needs their own laptop (Mac/Windows).
 - AI account: a paid ChatGPT account or another paid AI assistant. Let us know if you already use another provider and want to use it.
 - AI app/interface: the ChatGPT app or your preferred AI app. For technical users, it’s fine if you already have an AI chat integrated with VS Code.
-- Your data file: bring a real dataset you want to map (CSV, JSON, etc.). Aim for a representative sample that’s safe to use in class. If you can’t share production data, bring a small, sanitized sample.
+- Create a working folder for workshop files (e.g., `~/bootcamp`) and pull this repository into it.
+- Your data file: bring a real dataset you want to map (CSV, JSON, etc.). Aim for a representative sample that’s safe to use in class. If you can’t share production data, bring a small, sanitized sample and put it on the bootcamp directory.
 - Python 3.7 or later: needed to run the mapping/validation code the AI will generate.
   - Verify: `python3 --version` (or `python --version` on Windows).
 - Senzing environment (for final validation): we will load your mapped JSON into Senzing.
-  - Recommended: Docker, to use Senzing’s prebuilt containers.
-  - Verify: `docker --version` (if you plan to run locally with containers).
-  - See “Senzing Docker Quickstart” below; instructors can help if needed.
+  - Install Docker Desktop (Mac/Windows/Linux) and complete the first-run setup.
+  - Verify Docker is running: `docker --version` and `docker run hello-world`.
+  - Ensure at least 4 GB RAM is allocated to Docker (Settings → Resources).
+  - Pull the workshop container image ahead of time: `docker pull senzing/summit-bootcamp-2025`.
+  - If you cannot install Docker, let us know in advance; we will provide alternatives during the session.
 
 Notes
 - We want you to solve a real problem. Bring a dataset and context so we can map to Senzing in a way that’s meaningful to your use case.
 - Keep sensitive data safe. Prefer samples or de-identified subsets when possible.
-
-## Senzing Docker Quickstart
-- Install Docker Desktop (Mac/Windows) and complete the first-run setup.
-- Verify Docker is running: `docker --version` and `docker run hello-world`.
-- Ensure at least 4 GB RAM is allocated to Docker (Settings → Resources).
-- Create a working folder for workshop files (e.g., `~/senzing-workshop`).
-- Pull the workshop container image ahead of time: `docker pull senzing/summit-bootcamp-2025`.
-- If you cannot install Docker, let us know in advance; we will provide alternatives during the session.
 
 ## What’s Inside
 
 ### Documents folder
 
 - [docs/mapping_instructions.md](docs/mapping_instructions.md): master mapping instructions/prompt with rules, templates, and examples.
+- [docs/mapping_examples.md](docs/mapping_examples.md): curated reference examples that show correct Senzing JSON patterns.
 - [docs/senzing_entity_specification.md](docs/senzing_entity_specification.md): authoritative, AI-ready Senzing Entity Spec (this repo is the source of truth).
+- [docs/lint_senzing_json.py](docs/lint_senzing_json.py): JSON schema linter for validating generated Senzing JSON/JSONL.
 - [docs/identifier_crosswalk.json](docs/identifier_crosswalk.json): canonical identifier types, aliases, and mapping guidance.
 - [docs/identifier_lookup_log.md](docs/identifier_lookup_log.md): template to record curated identifier lookups (no PII).
 
@@ -52,11 +49,11 @@ Notes
   - Path: `tools/file_analyzer.py`
   - Purpose: analyze CSV/JSON/Parquet when a schema doesn’t exist; shows attribute name, inferred type, population %, uniqueness %, and top values.
   - Run: `python3 tools/file_analyzer.py -i path/to/data.csv -o path/to/schema.csv`
- - Senzing JSON Linter (schema correctness check):
-   - Path: `tools/lint_senzing_json.py`
-   - Purpose: validates structure of Senzing JSON/JSONL.
-   - Run (file): `python3 tools/lint_senzing_json.py path/to/output.jsonl`
-   - Run (directory): `python3 tools/lint_senzing_json.py path/to/dir`
+- Senzing JSON Linter (schema correctness check):
+  - Path: `docs/lint_senzing_json.py`
+  - Purpose: validates structure of Senzing JSON/JSONL.
+  - Run (file): `python3 docs/lint_senzing_json.py path/to/output.jsonl`
+  - Run (directory): `python3 docs/lint_senzing_json.py path/to/dir`
 - Senzing JSON Analyzer (validate mapped JSONL before loading):
   - Path: `tools/sz_json_analyzer.py`
   - Purpose: validates/inspects Senzing JSON/JSONL; highlights mapped vs unmapped attributes, uniqueness/population, warnings, and errors.
@@ -84,8 +81,9 @@ Data Handling Guidance
    - Option A — Prebuilt GPT (no doc uploads): open [Senzing Mapping Assistant](https://chatgpt.com/g/g-68d471ea99a08191a4fbe2cf42bdc0d1-senzing-mapping-assistant) and click “Help me map my schema or data file.” The mapping docs are preloaded, so proceed to Step 4.
 
    - Option B — Your AI’s chat interface: create a new project/workspace and load the core references as project documents before you start chatting.
+     - Upload these files so the assistant can cite them:
        - `docs/mapping_examples.md`
-       - `tools/lint_senzing_json.py`
+       - `docs/lint_senzing_json.py`
        - `docs/senzing_entity_specification.md`
      - Paste the contents of `docs/mapping_instructions.md` into the system prompt (or the first message if no system field exists).
 
@@ -95,7 +93,7 @@ Data Handling Guidance
        https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_instructions.md
        https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_examples.md
        https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/senzing_entity_specification.md
-       https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/lint_senzing_json.py
+       https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/lint_senzing_json.py
        ```
 
 
@@ -115,8 +113,8 @@ Data Handling Guidance
    - Ensure one record per entity with all FEATURES and relationships.
 6) Validate outputs
    - Lint for schema correctness first:
-     - Local file: `python3 tools/lint_senzing_json.py path/to/output.jsonl`
-     - Raw URL (for remote use): https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/lint_senzing_json.py
+     - Local file: `python3 docs/lint_senzing_json.py path/to/output.jsonl`
+     - Raw URL (for remote use): https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/lint_senzing_json.py
    - Then analyze with Senzing JSON Analyzer:
      - `python3 tools/sz_json_analyzer.py -i path/to/output.jsonl -o path/to/report.csv`
      - Shows recognized vs. unmapped features, population and uniqueness percents, and top values post-mapping.
@@ -125,6 +123,6 @@ Data Handling Guidance
 - SenzingGPT (ChatGPT): https://chatgpt.com/g/g-679d39f4717c819192476201873ebc21-senzinggpt
 - Mapping Instructions: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_instructions.md
 - Senzing Entity Spec: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/senzing_entity_specification.md
-- Linter: https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/lint_senzing_json.py
+- Linter: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/lint_senzing_json.py
 - Identifier Crosswalk: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/identifier_crosswalk.json
 - JSON Analyzer Docs (Senzing Garage): https://github.com/senzing-garage/sz-json-analyzer
