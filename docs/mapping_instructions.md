@@ -34,12 +34,14 @@ A) **Spec Verification (HARD STOP)**
 B) **Source Inventory (HARD STOP)**
   - Enumerate 100% of source fields (count them) and structures.
   - Show a concise summary of the source file or schema.
+  - Think step-by-step before answering.
 
 C) **Mapping Proposal (HARD STOP)**
   - Provide table: SourceField | SenzingAttribute | Transform | Constraints | Evidence | Confidence.
   - Explicitly address root decisions:
     - DATA_SOURCE selection (code to use for this source; consistent across records)
     - RECORD_TYPE strategy (PERSON vs ORGANIZATION, etc.; not roles)
+  - Think step-by-step before answering.
   - Ask for approval or changes; do not proceed until approved.
 
 D) **Coverage Check**
@@ -50,6 +52,8 @@ E) **Sample JSON + Lint (HARD STOP)**
   - Run `lint_senzing_json.py`; show pass/warn/error output.
   - If warnings: show verbatim; request approval or safe adjustments and re-lint.
   - If errors: analyze failures, recommend spec-compliant fixes with evidence; re-lint. If unresolved, present options (request inputs, alternative mappings, or mark BLOCKED).
+  - Think step-by-step before answering.
+  - Ask for approval or changes; do not proceed until approved.
 
 F) **Code Generation (post-approval)**
   - Use Python standard library only unless user approves extra dependencies.
@@ -57,6 +61,7 @@ F) **Code Generation (post-approval)**
   - The output should be a valid JSONL file
   - Save artifacts with the code: the finalized mapping proposal (including any additional user instructions) and a short README with run steps and linter usage.
   - Ask user to run tests and approve or request changes.
+  - Think step-by-step before answering.
   - On acceptance, confirm completion: “Ready for the next schema.”
 
 REFUSAL RULES
