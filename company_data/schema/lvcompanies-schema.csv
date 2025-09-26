@@ -1,0 +1,30 @@
+file_name,lvcompanies.jsonl
+file_type,jsonl
+
+attribute,type,record_cnt,record_pct,unique_cnt,unique_pct,top_value1,top_value2,top_value3,top_value4,top_value5
+id,str,64269,100.0,64269,100.0,20246849 (1),20425868 (1),20432294 (1),20453426 (1),20485898 (1)
+title,str,64269,100.0,55736,86.72,24 Hours Locksmith (74),Starbucks (53),Bank Of America (50),7 Eleven (49),7-Eleven (49)
+street,str,64269,100.0,41625,64.77,101 Convention Center Dr (387),1800 E Sahara Ave (218),5300 W Sahara Ave (201),1717 S Decatur Blvd (188),3960 Howard Hughes Pkwy (182)
+city,str,64269,100.0,176,0.27,Las Vegas (58306),North Las Vegas (3554),Las vegas (1667),North las vegas (129),Henderson (125)
+state,str,64269,100.0,41,0.06,NV (61437),Nv (1794),NM (712),CO (66),TX (59)
+zip,str,64269,100.0,24081,37.47,89109-2001 (383),89118 (270),89119 (264),89104-3732 (250),89102-8598 (219)
+county,str,58073,90.36,99,0.17,Clark (57091),San Miguel (655),El Paso (61),Tarrant (36),CLARK (25)
+phone,str,64269,100.0,54680,85.08,702-862-3300 (91),702-383-8888 (62),702-732-6000 (61),702-966-4246 (49),702-792-7000 (44)
+email,str,60582,94.26,3974,6.56,NULL (55132),webmaster@7-11.com (50),franchise.sales@jackinthebox.com (46),webmaster@clarkcountynv.gov (44),privacyofficer@kroger.com (40)
+lat,str,58073,90.36,250,0.43,36.1433 (4041),36.0849 (3617),36.081 (3110),36.126 (2892),36.1149 (2863)
+lon,str,58073,90.36,250,0.43,115.2004 (4041),115.1471 (3780),115.2169 (3110),115.1535 (2892),115.216 (2863)
+attn,str,64269,100.0,37773,58.77,NULL (21198),Foster Holloway (18),Mark Taylor (11),David Lee (10),Paul Caruso (9)
+job,str,36966,57.52,349,0.94,Owner (17249),Manager (10913),President (4913),Chief Executive Offi (605),Executive Director (493)
+numofemp,str,57920,90.12,9,0.02,4-Jan (36496),9-May (10373),19-Oct (5738),20 - 49 (3198),50 - 99 (1139)
+v_numofemp,str,64269,100.0,10,0.02,4 (36496),9 (10373),0 (6349),19 (5738),49 (3198)
+v_sales,str,64269,100.0,12,0.02,5 (22909),10 (12879),0 (12500),25 (8957),50 (3454)
+sic,str,64269,100.0,3545,5.52,999977 (2386),581208 (2364),811103 (1969),801101 (1965),653118 (1688)
+note,str,64269,100.0,3529,5.49,Nonclassified Establishments (2398),Steak and barbecue restaurants (2364),Attorneys (1969),Internal medicine practitioners (1965),Real Estate (1688)
+parent,str,64269,100.0,3542,5.51,22360 (2386),18334 (2364),21183 (1969),20877 (1965),19202 (1688)
+lastedit,str,64269,100.0,1,0.0,NULL (64269),,,,
+ch,str,64269,100.0,1,0.0,NULL (64269),,,,
+hit,str,64269,100.0,17,0.03,6 (17210),12 (16985),14 (7137),9 (4996),3 (4393)
+country,str,64269,100.0,1,0.0,USA (64269),,,,
+sales,str,51769,80.55,11,0.02,Under 500k (22909),500k - 1 million (12879),1 - 2.5 million (8957),2.5 - 5 million (3454),5 - 10 million (1722)
+url,str,10608,16.51,8278,78.04,Starbucks.com (52),7-Eleven.com (48),Jackinthebox.com (46),Accessclarkcounty.com (43),Lasvegasnevada.gov (33)
+fax,str,17171,26.72,13691,79.73,702-870-2474 (20),702-873-9919 (18),702-966-4247 (13),702-878-4510 (12),702-220-6444 (10)
