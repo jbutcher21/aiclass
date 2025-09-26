@@ -1198,20 +1198,20 @@ Examples
 ### Feature: TRUSTED_ID
 Category: Control
 
-A Trusted ID will absolutely force records together when they have the same key in the same domain even if all their other features are different.  Conversely, two records with a different key in the same domain will be forced apart even if all their other features are the same.
+Two records with the same TRUSTED_ID type and number will absolutely force records together even if all their other features are different.  Conversely, two records with a different TRUSTED_ID number of the same type will be forced apart even if all their other features are the same.
 
-This feature can be used by data stewards to manually force records together or apart.  It can also be used for an source system identifier that is so trusted you want it to never be overruled by Senzing.  
+This feature can be used by data stewards to manually force records together or apart.  It can also be used for a source system identifier that is so trusted you want it to never be overruled by Senzing.  
 
 | Attribute | Example | Guidance |
 | --- | --- | --- |
-| TRUSTED_ID_DOMAIN | STEWARD | Short code for the identifier domain/system (e.g., STEWARD, MASTER_ID). |
-| TRUSTED_ID_KEY | 1234-12345 | The identifier value shared by records that must resolve together. |
+| TRUSTED_ID_TYPE | STEWARD | Short code for the identifier domain/system (e.g., STEWARD, MASTER_ID). |
+| TRUSTED_ID_NUMBER | 1234-12345 | The identifier value shared by records that must resolve together. |
 
 Example
 ```json
 {
   "FEATURES": [
-    { "TRUSTED_ID_DOMAIN": "STEWARD", "TRUSTED_ID_KEY": "1234-12345" }
+    { "TRUSTED_ID_TYPE": "STEWARD", "TRUSTED_ID_NUMBER": "1234-12345" }
   ]
 }
 ```
