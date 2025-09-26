@@ -1,7 +1,6 @@
 # AI-Class: Senzing Mapping Assistant
 
 This repository contains an AI-ready Senzing Entity Specification and mapping instructions to guide you through the process of mapping your data to Senzing with AI.
-It also includes a JSON linter and identifier crosswalk to standardize mappings.
 
 ## Prerequisites
 
