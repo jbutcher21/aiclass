@@ -133,6 +133,7 @@ Step 6: Validate outputs
 
 ## Important Links (Raw)
 - SenzingGPT (ChatGPT): https://chatgpt.com/g/g-679d39f4717c819192476201873ebc21-senzinggpt
+- Senzing Mapping Assistant (ChatGPT)https://chatgpt.com/g/g-68d471ea99a08191a4fbe2cf42bdc0d1-senzing-mapping-assistant
 - Mapping Instructions: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_instructions.md
 - Senzing Entity Spec: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/senzing_entity_specification.md
 - Linter: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/lint_senzing_json.py
