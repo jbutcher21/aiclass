@@ -19,7 +19,9 @@ What to bring:
     - If you cannot install Docker, let us know in advance; we will provide alternatives during the session.
   - Verify Docker is running: `docker --version` and `docker run hello-world`.
   - Ensure at least 4 GB RAM is allocated to Docker (Settings → Resources).
-  - Pull the workshop container image ahead of time: `docker pull senzing/summit-bootcamp-2025`.
+  - Pull the workshop container image ahead of time: 
+    - `docker pull senzing/summit-bootcamp-2025`.
+    - `docker pull ollama/ollama:latest`
 
 Notes
 - We want you to solve a real problem. Bring a dataset and context so we can map to Senzing in a way that’s meaningful to your use case.
