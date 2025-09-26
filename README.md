@@ -11,15 +11,15 @@ What to bring:
 - AI account: a paid ChatGPT account or another paid AI assistant. Let us know if you already use another provider and want to use it.
 - AI app/interface: the ChatGPT app or your preferred AI app. For technical users, it’s fine if you already have an AI chat integrated with VS Code.
 - Create a working folder for workshop files (e.g., `~/bootcamp`) and pull this repository into it.
-- Your data file: bring a real dataset you want to map (CSV, JSON, etc.). Aim for a representative sample that’s safe to use in class. If you can’t share production data, bring a small, sanitized sample and put it on the ~/bootcamp directory.
-- Python 3.7 or later: needed to run the mapping/validation code the AI will generate.
+- Your data file: bring a real dataset you want to map (CSV, JSON, etc.). Aim for a representative sample that’s safe to use in class. If you can’t share production data, bring a small, sanitized sample and put it on the `~/bootcamp` directory.
+- Python 3.8 or later: needed to run the mapping/validation code the AI will generate.
   - Verify: `python3 --version` (or `python --version` on Windows).
 - Senzing environment (for final validation): we will load your mapped JSON into Senzing.
   - Install Docker Desktop (Mac/Windows/Linux) and complete the first-run setup.
+    - If you cannot install Docker, let us know in advance; we will provide alternatives during the session.
   - Verify Docker is running: `docker --version` and `docker run hello-world`.
   - Ensure at least 4 GB RAM is allocated to Docker (Settings → Resources).
   - Pull the workshop container image ahead of time: `docker pull senzing/summit-bootcamp-2025`.
-  - If you cannot install Docker, let us know in advance; we will provide alternatives during the session.
 
 Notes
 - We want you to solve a real problem. Bring a dataset and context so we can map to Senzing in a way that’s meaningful to your use case.
@@ -74,17 +74,17 @@ Data Handling Guidance
 - If you don't already have a schema, use the File Analyzer in the tools directory to produce a schema and stats summary, then provide that summary to the assistant during mapping (`tools/file_analyzer.py`).
 
 Tips for collaborating with an AI:
-- Ask it questions if you don't understand something.  One of my favorites is: "what does the senzing spec say about that"
+- Ask it questions if you don't understand something.  One of my favorites is: `what does the senzing spec say about that`
 - If it gives you options, ask it for the pros and cons.
 - Correct it when it gets something wrong. It will learn from you.
-- Keep it on track: AI's hallucinate.  See: https://www.geeky-gadgets.com/chatgpt-5-common-issues-and-solutions/
-  - telling it to "**go back to strict mode"** will get it back on track.
+- Keep it on track: AI's hallucinate.  See: [ChatGPT Common Issues And Solutions](https://www.geeky-gadgets.com/chatgpt-5-common-issues-and-solutions/)
+  - telling it to `go back to strict mode` will get it back on track.
 
 **Above all: Don't use it to replace your judgement or expertice.  It just your assistant.  You are the decision maker.**
 
 
 Step 1:  Create a project folder (if you haven't already)
-- Make a working directory for this class (e.g., `~/bootcamp/my-source`).
+- Make a working directory for your data (e.g., `~/bootcamp/my-source`).
 - Put your dataset into it (e.g., a `data/` subfolder).
 - No dataset? Copy from the employee demo to get started: copy `employee_demo/schema/` and, if desired, `employee_demo/data/`.
 
@@ -138,4 +138,4 @@ Step 6: Validate outputs
 - Linter: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/lint_senzing_json.py
 - Identifier Crosswalk: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/identifier_crosswalk.json
 - JSON Analyzer Docs (Senzing Garage): https://github.com/senzing-garage/sz-json-analyzer
-- ChatGPT Troubleshooting Tips: https://www.geeky-gadgets.com/chatgpt-5-common-issues-and-solutions/
+- ChatGPT Common Issues And Solutions: https://www.geeky-gadgets.com/chatgpt-5-common-issues-and-solutions/
