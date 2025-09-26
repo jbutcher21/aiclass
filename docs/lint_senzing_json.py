@@ -113,6 +113,8 @@ for fam, keys in ALLOWED_ATTRS.items():
     for k in keys:
         KEY_TO_FAMILY[k] = fam
 
+ALLOWED_RECORD_TYPES = {"PERSON", "ORGANIZATION", "VESSEL", "AIRCRAFT"}
+
 
 def is_scalar(value: Any) -> bool:
     return isinstance(value, SCALAR_TYPES)
@@ -181,6 +183,11 @@ def lint_record(doc: Any, where: str, *, strict: bool = True) -> List[str]:
                 errors.append(f"{loc}: Attribute '{kk}' must be scalar; found {type(vv).__name__}")
         if "RECORD_TYPE" in item and isinstance(item.get("RECORD_TYPE"), str):
             has_record_type = True
+            if item["RECORD_TYPE"] not in ALLOWED_RECORD_TYPES:
+                errors.append(
+                    f"{loc}: RECORD_TYPE '{item['RECORD_TYPE']}' is not allowed; "
+                    f"must be one of {sorted(ALLOWED_RECORD_TYPES)}"
+                )
         fams, unknown = feature_families(item)
         # --- Address Rule ---
         if "ADDR_FULL" in item:
