@@ -1,3 +1,6 @@
+file_name,us-small-employee-raw.csv
+file_type,csv
+
 attribute,type,record_cnt,record_pct,unique_cnt,unique_pct,top_value1,top_value2,top_value3,top_value4,top_value5
 emp_num,str,38,100.0,38,100.0,1 (1),2 (1),3 (1),4 (1),5 (1)
 last_name,str,38,100.0,37,97.37,Martin (2),Sheehan (1),Mcpherson (1),Spector (1),Hammond (1)

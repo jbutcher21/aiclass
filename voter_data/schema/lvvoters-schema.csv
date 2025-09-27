@@ -1,3 +1,6 @@
+file_name,lvvoters.csv
+file_type,csv
+
 attribute,type,record_cnt,record_pct,unique_cnt,unique_pct,top_value1,top_value2,top_value3,top_value4,top_value5
 STATUS,str,1516360,100.0,1,0.0,A (1516360),,,,
 PRECINCT,str,1516360,100.0,826,0.05,6001 (6222),7366 (6206),6492 (5452),1668 (5293),3793 (5054)
