@@ -14,34 +14,6 @@ import numpy as np
 # import csv or pandas here
 
 
-def xml_to_dict(element):
-    """Convert XML element to dictionary"""
-    result = {}
-    
-    # Handle text content
-    if element.text and element.text.strip():
-        if len(element) == 0:  # Leaf node
-            return element.text.strip()
-        result['text'] = element.text.strip()
-    
-    # Handle attributes
-    if element.attrib:
-        result.update(element.attrib)
-    
-    # Handle child elements
-    for child in element:
-        child_data = xml_to_dict(child)
-        if child.tag in result:
-            # If tag already exists, convert to list
-            if not isinstance(result[child.tag], list):
-                result[child.tag] = [result[child.tag]]
-            result[child.tag].append(child_data)
-        else:
-            result[child.tag] = child_data
-    
-    return result
-
-
 class Mapper:
     """mapper class"""
 
@@ -65,6 +37,19 @@ class Mapper:
         json_obj.set_record_type("")  # should be PERSON or ORGANIZATION
 
         # place column mappings here
+
+        # feature example
+        # json_obj.add_feature(
+        #     {
+        #         "NAME_LAST": raw_data["last_name"],
+        #         "NAME_FIRST": raw_data["first_name"],
+        #         "NAME_MIDDLE": raw_data["middle_name"],
+        #     }
+        # )
+
+        # payload examples
+        # json_obj.add_payload({"job_category": raw_data["job_category"]})
+        # json_obj.add_payload({"job_title": raw_data["job_title"]})
 
         json_data = json_obj.render()
         self.capture_mapped_stats(json_data)
