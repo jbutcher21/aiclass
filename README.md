@@ -17,10 +17,10 @@ What to bring:
 - Senzing environment (for final validation): we will load your mapped JSON into Senzing.
   - Install Docker Desktop (Mac/Windows/Linux) and complete the first-run setup.
     - If you cannot install Docker, let us know in advance; we will provide alternatives during the session.
-  - Verify Docker is running: `docker --version` and `docker run hello-world`.
+  - Verify Docker is running: `docker --version` and `docker run hello-world`
   - Ensure at least 4 GB RAM is allocated to Docker (Settings → Resources).
   - Pull the workshop container image ahead of time: 
-    - `docker pull senzing/summit-bootcamp-2025`.
+    - `docker pull senzing/summit-bootcamp-2025`
   - If you can also, do these two pulls to get a local AI model:
     - docker run -d --name ollama -p 11434:11434 -v ollama:/root/.ollama ollama/ollama:latest
     - docker exec -it ollama ollama pull mistral:7b-instruct-q4_K_M
@@ -66,7 +66,7 @@ Notes
 - File Analyzer (profile files to derive schema and stats):
   - Path: `tools/file_analyzer.py`
   - Purpose: analyze CSV/JSON/Parquet when a schema doesn’t exist; shows attribute name, inferred type, population %, uniqueness %, and top values.
-  - Run: `python3 tools/file_analyzer.py -i path/to/data.csv -o path/to/schema.csv`
+  - Run: `python3 tools/file_analyzer.py path/to/data.csv -o path/to/schema.csv`
 - Senzing JSON Linter (schema correctness check):
   - Path: `docs/lint_senzing_json.py`
   - Purpose: validates structure of Senzing JSON/JSONL.
@@ -75,7 +75,7 @@ Notes
 - Senzing JSON Analyzer (validate mapped JSONL before loading):
   - Path: `tools/sz_json_analyzer.py`
   - Purpose: validates/inspects Senzing JSON/JSONL; highlights mapped vs unmapped attributes, uniqueness/population, warnings, and errors.
-  - Run: `python3 tools/sz_json_analyzer.py -i path/to/output.jsonl -o path/to/report.csv`
+  - Run: `python3 tools/sz_json_analyzer.py path/to/output.jsonl -o path/to/report.csv`
   - Docs: https://github.com/senzing-garage/sz-json-analyzer
 
 ## Step-by-Step Guide (Senzing Mapping Assistant)
@@ -100,7 +100,7 @@ Step 1:  Create a project folder (if you haven't already)
 - No dataset? Copy from the employee data to get started: copy `employee_data/schema/` and, if desired, `employee_data/data/`.
 
 Step 2: If you don’t have a schema: generate one with the File Analyzer
-  - Run: `python3 tools/file_analyzer.py -i path/to/data.csv -o path/to/schema.csv`
+  - Run: `python3 tools/file_analyzer.py path/to/data.csv -o path/to/schema.csv`
   - Place the output schema (e.g., `schema.csv`) in your project (e.g., a `schema/` subfolder).
   - If you already have an official schema or data dictionary, skip this step.
 
@@ -132,15 +132,52 @@ Step 4: Map your schema through to code
 Step 5: Generate Senzing JSON output
    - Run the transformer you built with the assistant to produce JSONL files.
    - Example: `python3 transform_your_source.py --input path/to/source.csv --output path/to/output.jsonl`
-   - Ensure one record per entity with all FEATURES and relationships.
-
-Step 6: Validate outputs
-   - Lint for schema correctness first:
+   - Lint for schema correctness:
      - Local file: `python3 docs/lint_senzing_json.py path/to/output.jsonl`
      - Raw URL (for remote use): https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/lint_senzing_json.py
-   - Then analyze with Senzing JSON Analyzer:
-     - `python3 tools/sz_json_analyzer.py -i path/to/output.jsonl -o path/to/report.csv`
-     - Shows recognized vs. unmapped features, population and uniqueness percents, and top values post-mapping.
+
+Step 6: Load into Senzing
+  *Note: this part will depend on if you are on windows, linux or mac, whether you have docker installed and/or python3.  If you have trouble with any of this raise your hand and we will help you.*
+
+   - Analyze with Senzing JSON Analyzer:  (You can do this in the docker image if you don't have python installed.)
+     - Local file: `python3 docs/sz_json_analyzer.py path/to/output.jsonl`
+     - Raw URL (for remote use): https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/sz_json_analyzer.py
+        - see the docs at https://github.com/senzing-garage/sz-json-analyzer
+
+   - Load your file in the Senzing instance:
+      - go into the docker instance
+      - add your data sources in sz_configtool
+      - load your json file with sz_file_loader
+      - take a snapshot with sz_snapshot
+      - explore your results with sz_explorer
+
+      see https://www.senzing.com/docs/tutorials/eda/
+
+Here is what it should look like.
+```
+jbutcher@MacBookPro:~/bootcamp$ docker run --rm -it --user 0 -v .:/bootcamp senzing/summit-bootcamp-2025
+root@89730121f88b:/# cd /bootcamp
+root@89730121f88b:/bootcamp# sz_configtool 
+
+Type help or ? for help
+
+(szcfg) addDataSource EMPLOYEES
+
+Data source successfully added!
+
+(szcfg) addDataSource EMPLOYERS
+
+Data source successfully added!
+
+(szcfg) save
+
+Are you certain you wish to proceed and save changes? (y/n) y
+
+Configuration changes saved
+
+(szcfg) quit
+
+```
 
 ## Important Links (Raw)
 - SenzingGPT (ChatGPT): https://chatgpt.com/g/g-679d39f4717c819192476201873ebc21-senzinggpt
