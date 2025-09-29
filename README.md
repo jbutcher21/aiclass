@@ -155,7 +155,8 @@ Step 6: Load into Senzing
 
 Here is what you should type:
 ```
-jbutcher@MacBookPro:~/bootcamp$ docker run --rm -it --user 0 -v .:/bootcamp senzing/summit-bootcamp-2025
+docker run --rm -it --user 0 -v .:/bootcamp senzing/summit-bootcamp-2025
+
 root@89730121f88b:/# cd /bootcamp
 root@89730121f88b:/bootcamp# sz_configtool 
 
@@ -164,11 +165,11 @@ root@89730121f88b:/bootcamp# sz_configtool
 (szcfg) save
 (szcfg) quit
 
-root@89730121f88b:/bootcamp# sz_file_loader -f employees/output/employee_senzing.jsonl 
+sz_file_loader -f employees/output/employee_senzing.jsonl 
 
-root@89730121f88b:/bootcamp# sz_snapshot -o snap1
+sz_snapshot -o snap1
 
-root@89730121f88b:/bootcamp# sz_explorer -s snap1.json 
+sz_explorer -s snap1.json 
  
 ```
 
