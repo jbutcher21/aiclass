@@ -139,12 +139,12 @@ Step 5: Generate Senzing JSON output
 Step 6: Load into Senzing
   *Note: this part will depend on if you are on windows, linux or mac, whether you have docker installed and/or python3.  If you have trouble with any of this raise your hand and we will help you.*
 
-   - Analyze with Senzing JSON Analyzer:  (You can do this in the docker image if you don't have python installed.)
+   - Analyze with Senzing JSON Analyzer:
      - Local file: `python3 docs/sz_json_analyzer.py path/to/output.jsonl`
      - Raw URL (for remote use): https://raw.githubusercontent.com/jbutcher21/aiclass/main/tools/sz_json_analyzer.py
         - see the docs at https://github.com/senzing-garage/sz-json-analyzer
 
-   - Load your file in the Senzing instance:
+   - Load your file in the Senzing instance: (only if you have docker)
       - go into the docker instance
       - add your data sources in sz_configtool
       - load your json file with sz_file_loader
@@ -153,30 +153,23 @@ Step 6: Load into Senzing
 
       see https://www.senzing.com/docs/tutorials/eda/
 
-Here is what it should look like.
+Here is what you should type:
 ```
 jbutcher@MacBookPro:~/bootcamp$ docker run --rm -it --user 0 -v .:/bootcamp senzing/summit-bootcamp-2025
 root@89730121f88b:/# cd /bootcamp
 root@89730121f88b:/bootcamp# sz_configtool 
 
-Type help or ? for help
-
 (szcfg) addDataSource EMPLOYEES
-
-Data source successfully added!
-
 (szcfg) addDataSource EMPLOYERS
-
-Data source successfully added!
-
 (szcfg) save
-
-Are you certain you wish to proceed and save changes? (y/n) y
-
-Configuration changes saved
-
 (szcfg) quit
 
+root@89730121f88b:/bootcamp# sz_file_loader -f employees/output/employee_senzing.jsonl 
+
+root@89730121f88b:/bootcamp# sz_snapshot -o snap1
+
+root@89730121f88b:/bootcamp# sz_explorer -s snap1.json 
+ 
 ```
 
 ## Important Links (Raw)
