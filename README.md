@@ -55,7 +55,7 @@ Notes
   - `data/`: sample voter dataset
   - `schema/`: inferred schema produced for the voter dataset
 
-### Voter Data (input only)
+### Company Data (input only)
 
 - Path: `company_data/`
 - Contents:
