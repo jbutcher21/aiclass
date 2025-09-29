@@ -85,7 +85,7 @@ OUTPUTS:
 - Persist artifacts with the generated code: approved mapping proposal + user instructions (README).  
 
 ## 🚀 Usage
-1. Start a new ChatGPT session.  
+1. Start a new AI chat session.  
 2. Upload `senzing_entity_specification.md`, `mapping_instructions.md`, and `lint_senzing_json.py`.  
 3. Type `go`.  
 4. AI will enter STRICT MODE and begin at Spec Verification.
