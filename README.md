@@ -97,7 +97,7 @@ Tips for collaborating with an AI:
 Step 1:  Create a project folder (if you haven't already)
 - Make a working directory for your data (e.g., `~/bootcamp/my-source`).
 - Put your dataset into it (e.g., a `data/` subfolder).
-- No dataset? Copy from the voter or company_data to your new working directory.
+- No dataset? Copy from the aiclass voter_data or company_data folder to your new working directory.
 
 Step 2: If you don’t have a schema: generate one with the File Analyzer
   - Run: `python3 tools/file_analyzer.py path/to/data.csv -o path/to/schema.csv`
