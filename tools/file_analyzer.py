@@ -84,6 +84,8 @@ class FileAnalyzer:
         self.root_node = Node("root")
         self.root_node.node_desc = file_name
         self.root_node.node_type = file_type
+        self.file_name = file_name
+        self.file_type = file_type
         self.nodes = {"root": self.root_node}
         self.top_value_count = 10
         self.group_by_attr = group_by_attr
@@ -999,18 +1001,25 @@ def create_python_script_legacy(code_rows, file_type, encoding):
     return script_rows
 
 
+def strip_namespace(tag):
+    """Return XML tag without namespace info like '{ns}Tag'."""
+    if isinstance(tag, str) and tag.startswith('{'):
+        return tag.split('}', 1)[1]
+    return tag
+
+
 def element_to_dict(element):
     """Convert an XML element to a dictionary recursively."""
     result = {}
     if element.attrib:
-        result.update(element.attrib)
+        result.update({strip_namespace(k): v for k, v in element.attrib.items()})
     if element.text and element.text.strip():
         result['text'] = element.text.strip()
-    
+
     children = {}
     for child in element:
         child_dict = element_to_dict(child)
-        tag = child.tag
+        tag = strip_namespace(child.tag)
         if tag in children:
             if not isinstance(children[tag], list):
                 children[tag] = [children[tag]]
@@ -1263,7 +1272,12 @@ Example: 'properties:type,country:number'""")
         if args.output_file:
             with open(args.output_file, "w") as file:
                 writer = csv.writer(file)
-                writer.writerows(report_rows)
+                metadata_rows = [
+                    ["file_name", analyzer.file_name],
+                    ["file_type", analyzer.file_type],
+                    []
+                ]
+                writer.writerows(metadata_rows + report_rows)
             print(f"statistical report saved to {args.output_file}\n")
         elif prettytable:
             report_viewer(report_rows)
