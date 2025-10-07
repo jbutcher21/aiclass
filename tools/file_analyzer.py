@@ -425,7 +425,7 @@ class FileAnalyzer:
             except (ValueError, TypeError):
                 # Fallback for values that can't be easily checked
                 is_empty = False
-                
+
             if not is_empty:
                 if group_nodes[attr_key].node_type == "unk":
                     group_nodes[attr_key].node_type = str(type(value))[8:-2]
@@ -434,15 +434,15 @@ class FileAnalyzer:
                     value = f"{len(value)} items"
                 elif isinstance(value, np.ndarray):
                     value = f"array({value.shape}) items"
-                    
-            # Ensure value is always a string for dictionary key
-            value = str(value)
 
-            group_nodes[attr_key].record_count += 1
-            if value not in group_nodes[attr_key].unique_values:
-                group_nodes[attr_key].unique_values[value] = 1
-            else:
-                group_nodes[attr_key].unique_values[value] += 1
+                # Ensure value is always a string for dictionary key
+                value = str(value)
+
+                group_nodes[attr_key].record_count += 1
+                if value not in group_nodes[attr_key].unique_values:
+                    group_nodes[attr_key].unique_values[value] = 1
+                else:
+                    group_nodes[attr_key].unique_values[value] += 1
 
     def update_node(self, prior_key, key, value):
         attr_key = f"{prior_key}.{key}" if key else prior_key
@@ -467,7 +467,7 @@ class FileAnalyzer:
             except (ValueError, TypeError):
                 # Fallback for values that can't be easily checked
                 is_empty = False
-                
+
             if not is_empty:
                 if self.nodes[attr_key].node_type == "unk":
                     self.nodes[attr_key].node_type = str(type(value))[8:-2]
@@ -476,15 +476,15 @@ class FileAnalyzer:
                     value = f"{len(value)} items"
                 elif isinstance(value, np.ndarray):
                     value = f"array({value.shape}) items"
-                
-            # Ensure value is always a string for dictionary key
-            value = str(value)
 
-            self.nodes[attr_key].record_count += 1
-            if value not in self.nodes[attr_key].unique_values:
-                self.nodes[attr_key].unique_values[value] = 1
-            else:
-                self.nodes[attr_key].unique_values[value] += 1
+                # Ensure value is always a string for dictionary key
+                value = str(value)
+
+                self.nodes[attr_key].record_count += 1
+                if value not in self.nodes[attr_key].unique_values:
+                    self.nodes[attr_key].unique_values[value] = 1
+                else:
+                    self.nodes[attr_key].unique_values[value] += 1
 
     def matches_filter(self, obj, filter_attr, filter_value):
         """Check if object matches the filter criteria"""
