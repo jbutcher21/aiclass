@@ -147,7 +147,7 @@ mapping_set = set(mapping_table_fields)
 if mapping_set not in source_set: HALT → show offending
 ```
 
-**4.6 Generate JSON:** Complete with samples.
+**4.6 Generate JSON:** Display complete sample inline (code block). Do NOT provide download links.
 
 **4.7 Lint:** If FAIL: fix → regen → re-lint → PASS. Then ask approval.
 
