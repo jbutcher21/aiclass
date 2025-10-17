@@ -8,8 +8,8 @@ This is a hands-on session where you will learn how to map data to Senzing using
 
 What to bring:
 - Laptop: each participant needs their own laptop (Mac/Windows).
-- AI account: a paid ChatGPT account or another paid AI assistant. Let us know if you already use another provider and want to use it.
-- AI app/interface: the ChatGPT app or your preferred AI app. For technical users, it’s fine if you already have an AI chat integrated with VS Code.
+- AI account: a paid AI subscription (Claude, ChatGPT, GitHub Copilot, Cursor, Google Gemini, Amazon CodeWhisperer, Codeium, or another paid AI assistant). Let us know if you already use another provider and want to use it.
+- AI app/interface: an AI-enabled IDE (VS Code with Claude/Copilot, Cursor, Windsurf, JetBrains with AI plugin, etc.). You'll use this throughout the workshop for mapping, coding, and testing.
 - Create a working folder for workshop files (e.g., `~/bootcamp`) and pull this repository into it.
 - Your data file: bring a real dataset you want to map (CSV, JSON, etc.). Aim for a representative sample that’s safe to use in class. If you can’t share production data, bring a small, sanitized sample and put it on the `~/bootcamp` directory.
 - Python 3: needed to run the mapping/validation code the AI will generate.
@@ -33,12 +33,14 @@ Notes
 
 ### Documents folder
 
-- [docs/mapping_instructions.md](docs/mapping_instructions.md): master mapping instructions/prompt with rules, templates, and examples.
-- [docs/mapping_examples.md](docs/mapping_examples.md): curated reference examples that show correct Senzing JSON patterns.
-- [docs/senzing_entity_specification.md](docs/senzing_entity_specification.md): authoritative, AI-ready Senzing Entity Spec (this repo is the source of truth).
-- [docs/lint_senzing_json.py](docs/lint_senzing_json.py): JSON schema linter for validating generated Senzing JSON/JSONL.
-- [docs/identifier_crosswalk.json](docs/identifier_crosswalk.json): canonical identifier types, aliases, and mapping guidance.
-- [docs/identifier_lookup_log.md](docs/identifier_lookup_log.md): template to record curated identifier lookups (no PII).
+The mapping documentation is maintained in the [Senzing/mapper-ai](https://github.com/Senzing/mapper-ai) repository:
+
+- [senzing_mapping_assistant_prompt.md](https://github.com/Senzing/mapper-ai/blob/main/rag/senzing_mapping_assistant_prompt.md): master mapping instructions/prompt with rules, templates, and examples.
+- [senzing_mapping_examples.md](https://github.com/Senzing/mapper-ai/blob/main/rag/senzing_mapping_examples.md): curated reference examples that show correct Senzing JSON patterns.
+- [senzing_entity_specification.md](https://github.com/Senzing/mapper-ai/blob/main/rag/senzing_entity_specification.md): authoritative, AI-ready Senzing Entity Spec (mapper-ai repo is the source of truth).
+- [lint_senzing_json.py](https://github.com/Senzing/mapper-ai/blob/main/rag/lint_senzing_json.py): JSON schema linter for validating generated Senzing JSON/JSONL.
+- [identifier_crosswalk.json](https://github.com/Senzing/mapper-ai/blob/main/rag/identifier_crosswalk.json): canonical identifier types, aliases, and mapping guidance.
+- [identifier_lookup_log.md](https://github.com/Senzing/mapper-ai/blob/main/rag/identifier_lookup_log.md): template to record curated identifier lookups (no PII).
 
 ### Employee Data (input and expected outputs)
 
@@ -68,7 +70,7 @@ Notes
   - Purpose: analyze CSV/JSON/Parquet when a schema doesn’t exist; shows attribute name, inferred type, population %, uniqueness %, and top values.
   - Run: `python3 tools/file_analyzer.py path/to/data.csv -o path/to/schema.csv`
 - Senzing JSON Linter (schema correctness check):
-  - Path: `docs/lint_senzing_json.py`
+  - Path: `docs/lint_senzing_json.py` (local) or fetch from [mapper-ai](https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/lint_senzing_json.py)
   - Purpose: validates structure of Senzing JSON/JSONL.
   - Run (file): `python3 docs/lint_senzing_json.py path/to/output.jsonl`
   - Run (directory): `python3 docs/lint_senzing_json.py path/to/dir`
@@ -81,8 +83,10 @@ Notes
 ## Step-by-Step Guide (Senzing Mapping Assistant)
 
 Data Handling Guidance
-- Do not upload full datasets to an AI. Share schema extracts, field lists, small samples, or analyzer summaries instead.
-- If you don't already have a schema, use the File Analyzer in the tools directory to produce a schema and stats summary, then provide that summary to the assistant during mapping (`tools/file_analyzer.py`).
+- **Best practice: Use schema files, not raw data.** Generate a schema with the File Analyzer and map from that. This uses fewer tokens, minimizes data exposure, and keeps your AI focused on the mapping logic.
+- **If working locally with your IDE**: You can have the AI map directly from raw data files, but it's still recommended to use the File Analyzer first when possible.
+- **If the File Analyzer can't handle your file format**: Either ask your AI to analyze the file and generate a schema, or write your own code to produce a schema document.
+- **Never upload full production datasets to web-based AI.** Use schema extracts, field lists, small sanitized samples, or analyzer summaries instead.
 
 Tips for collaborating with an AI:
 - Ask it questions if you don't understand something.  One of my favorites is: `what does the senzing spec say about that`
@@ -99,30 +103,40 @@ Step 1:  Create a project folder (if you haven't already)
 - Put your dataset into it (e.g., a `data/` subfolder).
 - No dataset? Copy from the aiclass voter_data or company_data folder to your new working directory.
 
-Step 2: If you don’t have a schema: generate one with the File Analyzer
-  - Run: `python3 tools/file_analyzer.py path/to/data.csv -o path/to/schema.csv`
-  - Place the output schema (e.g., `schema.csv`) in your project (e.g., a `schema/` subfolder).
-  - If you already have an official schema or data dictionary, skip this step.
+Step 2: Generate a schema (recommended approach)
+  - **Preferred: Use the File Analyzer** to generate a schema from your data:
+    - Run: `python3 tools/file_analyzer.py path/to/data.csv -o path/to/schema.csv`
+    - Place the output schema (e.g., `schema.csv`) in your project (e.g., a `schema/` subfolder).
+    - Benefits: fewer tokens, less data exposure, better AI focus on mapping logic
+  - **If you already have an official schema or data dictionary**: use that instead, skip this step.
+  - **If the File Analyzer can't handle your file format**:
+    - Option A: Ask your AI to analyze the file and generate a schema document
+    - Option B: Write your own code to produce a schema
+    - Option C (local IDE only): Have the AI map directly from the raw data file
 
-Step 3: Start your mapping session (choose one)
+Step 3: Start your mapping session in your IDE
 
-- Option A — Prebuilt GPT (no doc uploads): open [Senzing Mapping Assistant](https://chatgpt.com/g/g-68d471ea99a08191a4fbe2cf42bdc0d1-senzing-mapping-assistant) and click “Help me map my schema or data file.” The mapping docs are preloaded, so proceed to Step 4.
+**Recommended: Use your local IDE with AI assistant** (VS Code with Claude/Copilot, Cursor, Windsurf, JetBrains with AI plugin, etc.)
 
-- Option B — Your AI’s chat interface: create a new project/workspace and load the core references as project documents before you start chatting.
-  - Upload these files so the assistant can cite them:
-    - `docs/mapping_examples.md`
-    - `docs/lint_senzing_json.py`
-    - `docs/senzing_entity_specification.md`
-  - Paste the contents of `docs/mapping_instructions.md` into the system prompt (or the first message if no system field exists).
+This approach gives you direct file access, ability to execute the linter, generate and test code, handle complex multi-file schemas, and iterate on mapper implementations.
 
-- Option C — IDE workflow (best for complex schemas): open VS Code (or your IDE) on your project folder and connect your AI assistant extension.
-  - Pull the same reference files into the workspace. If you don’t have the repo locally, fetch them from these raw URLs:
-    ```
-    https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_instructions.md
-    https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_examples.md
-    https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/senzing_entity_specification.md
-    https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/lint_senzing_json.py
-    ```
+- Open your project folder in your AI-enabled IDE
+- Fetch the five RAG files into your workspace (clone the mapper-ai repo or download them):
+  ```
+  https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/senzing_mapping_assistant_prompt.md
+  https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/senzing_mapping_examples.md
+  https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/senzing_entity_specification.md
+  https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/lint_senzing_json.py
+  https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/identifier_crosswalk.json
+  ```
+- Configure your AI assistant to use these files as context/knowledge resources
+- Use `senzing_mapping_assistant_prompt.md` as your system prompt or opening instruction
+- Begin interactive work with your schema and data files
+
+**Alternative: Web-based AI chat** (if you cannot use a local IDE):
+- Open [Senzing Mapping Assistant GPT](https://chatgpt.com/g/g-68d471ea99a08191a4fbe2cf42bdc0d1-senzing-mapping-assistant) - mapping docs are preloaded
+- Or create a new project in your AI's web interface and upload the RAG files listed above
+- Note: web-based approaches lack local linter execution and may struggle with complex multi-file schemas
 
 Step 4: Map your schema through to code
    - Upload your schema and type go.
@@ -134,7 +148,7 @@ Step 5: Generate Senzing JSON output
    - Example: `python3 transform_your_source.py --input path/to/source.csv --output path/to/output.jsonl`
    - Lint for schema correctness:
      - Local file: `python3 docs/lint_senzing_json.py path/to/output.jsonl`
-     - Raw URL (for remote use): https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/lint_senzing_json.py
+     - Raw URL (for remote use): https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/lint_senzing_json.py
 
 Step 6: Load into Senzing
   *Note: this part will depend on if you are on windows, linux or mac, whether you have docker installed and/or python3.  If you have trouble with any of this raise your hand and we will help you.*
@@ -175,10 +189,12 @@ sz_explorer -s snap1.json
 
 ## Important Links (Raw)
 - SenzingGPT (ChatGPT): https://chatgpt.com/g/g-679d39f4717c819192476201873ebc21-senzinggpt
-- Senzing Mapping Assistant (ChatGPT)https://chatgpt.com/g/g-68d471ea99a08191a4fbe2cf42bdc0d1-senzing-mapping-assistant
-- Mapping Instructions: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/mapping_instructions.md
-- Senzing Entity Spec: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/senzing_entity_specification.md
-- Linter: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/lint_senzing_json.py
-- Identifier Crosswalk: https://raw.githubusercontent.com/jbutcher21/aiclass/main/docs/identifier_crosswalk.json
+- Senzing Mapping Assistant (ChatGPT): https://chatgpt.com/g/g-68d471ea99a08191a4fbe2cf42bdc0d1-senzing-mapping-assistant
+- Mapper-AI Documentation Repository: https://github.com/Senzing/mapper-ai
+- Mapping Instructions: https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/senzing_mapping_assistant_prompt.md
+- Mapping Examples: https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/senzing_mapping_examples.md
+- Senzing Entity Spec: https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/senzing_entity_specification.md
+- Linter: https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/lint_senzing_json.py
+- Identifier Crosswalk: https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/identifier_crosswalk.json
 - JSON Analyzer Docs (Senzing Garage): https://github.com/senzing-garage/sz-json-analyzer
 - ChatGPT Common Issues And Solutions: https://www.geeky-gadgets.com/chatgpt-5-common-issues-and-solutions/
