@@ -1,10 +1,8 @@
-# AI-Class: Senzing Mapping Assistant
-
-This repository contains an AI-ready Senzing Entity Specification and mapping instructions to guide you through the process of mapping your data to Senzing with AI.
-
-## Prerequisites
+# Senzing AI Mapping Workshop
 
 This is a hands-on session where you will learn how to map data to Senzing using AI. Each participant should come prepared so we can move quickly and focus on solving your real-world mapping challenges.
+
+## Prerequisites
 
 What to bring:
 - Laptop: each participant needs their own laptop (Mac/Windows).
@@ -19,7 +17,7 @@ What to bring:
     - If you cannot install Docker, let us know in advance; we will provide alternatives during the session.
   - Verify Docker is running: `docker --version` and `docker run hello-world`
   - Ensure at least 4 GB RAM is allocated to Docker (Settings → Resources).
-  - Pull the workshop container image ahead of time: 
+  - Pull the workshop container image ahead of time (will be available one week before class):
     - `docker pull senzing/summit-bootcamp-2025`
   - If you can also, do these two pulls to get a local AI model:
     - docker run -d --name ollama -p 11434:11434 -v ollama:/root/.ollama ollama/ollama:latest
@@ -93,7 +91,6 @@ Tips for collaborating with an AI:
 - If it gives you options, ask it for the pros and cons.
 - Correct it when it gets something wrong. It will learn from you.
 - Keep it on track: AI's hallucinate.  See: [ChatGPT Common Issues And Solutions](https://www.geeky-gadgets.com/chatgpt-5-common-issues-and-solutions/)
-  - telling it to `go back to strict mode` will get it back on track.
 
 **Above all: Don't use it to replace your judgement or expertice.  It just your assistant.  You are the decision maker.**
 
@@ -121,13 +118,14 @@ Step 3: Start your mapping session in your IDE
 This approach gives you direct file access, ability to execute the linter, generate and test code, handle complex multi-file schemas, and iterate on mapper implementations.
 
 - Open your project folder in your AI-enabled IDE
-- Fetch the five RAG files into your workspace (clone the mapper-ai repo or download them):
+- Fetch the RAG files into your workspace (clone the mapper-ai repo or download them):
   ```
   https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/senzing_mapping_assistant_prompt.md
   https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/senzing_mapping_examples.md
   https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/senzing_entity_specification.md
   https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/lint_senzing_json.py
   https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/identifier_crosswalk.json
+  https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/usage_type_crosswalk.json
   ```
 - Configure your AI assistant to use these files as context/knowledge resources
 - Use `senzing_mapping_assistant_prompt.md` as your system prompt or opening instruction
@@ -186,15 +184,3 @@ sz_snapshot -o snap1
 sz_explorer -s snap1.json 
  
 ```
-
-## Important Links (Raw)
-- SenzingGPT (ChatGPT): https://chatgpt.com/g/g-679d39f4717c819192476201873ebc21-senzinggpt
-- Senzing Mapping Assistant (ChatGPT): https://chatgpt.com/g/g-68d471ea99a08191a4fbe2cf42bdc0d1-senzing-mapping-assistant
-- Mapper-AI Documentation Repository: https://github.com/Senzing/mapper-ai
-- Mapping Instructions: https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/senzing_mapping_assistant_prompt.md
-- Mapping Examples: https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/senzing_mapping_examples.md
-- Senzing Entity Spec: https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/senzing_entity_specification.md
-- Linter: https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/lint_senzing_json.py
-- Identifier Crosswalk: https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/identifier_crosswalk.json
-- JSON Analyzer Docs (Senzing Garage): https://github.com/senzing-garage/sz-json-analyzer
-- ChatGPT Common Issues And Solutions: https://www.geeky-gadgets.com/chatgpt-5-common-issues-and-solutions/
