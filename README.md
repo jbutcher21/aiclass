@@ -7,7 +7,7 @@ This is a hands-on session where you will learn how to map data to Senzing using
 What to bring:
 - Laptop: each participant needs their own laptop (Mac/Windows).
 - AI account: a paid AI subscription (Claude, ChatGPT, GitHub Copilot, Cursor, Google Gemini, Amazon CodeWhisperer, Codeium, or another paid AI assistant). Let us know if you already use another provider and want to use it.
-- AI app/interface: an AI-enabled IDE (VS Code with Claude/Copilot, Cursor, Windsurf, JetBrains with AI plugin, etc.). You'll use this throughout the workshop for mapping, coding, and testing.
+- Local development environment with AI: you'll need a way to work with AI locally on your machine. Options include an IDE with AI extension (VS Code + Claude Code/Copilot, JetBrains + AI plugin), an AI-native IDE (Cursor, Windsurf), or a command-line AI tool (Claude Code CLI). This local setup lets you access files directly, run code, execute the linter, and iterate on your mappings throughout the workshop.
 - Create a working folder for workshop files (e.g., `~/bootcamp`) and pull this repository into it.
 - Your data file: bring a real dataset you want to map (CSV, JSON, etc.). Aim for a representative sample that’s safe to use in class. If you can’t share production data, bring a small, sanitized sample and put it on the `~/bootcamp` directory.
 - Python 3: needed to run the mapping/validation code the AI will generate.
@@ -92,7 +92,7 @@ Tips for collaborating with an AI:
 - Correct it when it gets something wrong. It will learn from you.
 - Keep it on track: AI's hallucinate.  See: [ChatGPT Common Issues And Solutions](https://www.geeky-gadgets.com/chatgpt-5-common-issues-and-solutions/)
 
-**Above all: Don't use it to replace your judgement or expertice.  It just your assistant.  You are the decision maker.**
+**Above all: Don't use it to replace your judgement or expertise.  It's just your assistant.  You are the decision maker.**
 
 
 Step 1:  Create a project folder (if you haven't already)
@@ -117,7 +117,7 @@ Step 3: Start your mapping session in your IDE
 
 This approach gives you direct file access, ability to execute the linter, generate and test code, handle complex multi-file schemas, and iterate on mapper implementations.
 
-- Open your project folder in your AI-enabled IDE
+- Open your project folder in your local development environment
 - Fetch the RAG files into your workspace (clone the mapper-ai repo or download them):
   ```
   https://raw.githubusercontent.com/Senzing/mapper-ai/main/rag/senzing_mapping_assistant_prompt.md
@@ -137,7 +137,7 @@ This approach gives you direct file access, ability to execute the linter, gener
 - Note: web-based approaches lack local linter execution and may struggle with complex multi-file schemas
 
 Step 4: Map your schema through to code
-   - Upload your schema and type go.
+   - Provide your schema to the AI assistant and start the mapping process.
    - Collaborate with the assistant to analyze your schema, agree on mappings, produce example JSON/JSONL, and generate a transformer script to emit Senzing JSONL.
    - By the end of this step you should have code. Download it, run it to map your data, and then verify the output with the JSON analyzer in `tools` (`tools/sz_json_analyzer.py`).
 
