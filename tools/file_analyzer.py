@@ -425,7 +425,7 @@ class FileAnalyzer:
             except (ValueError, TypeError):
                 # Fallback for values that can't be easily checked
                 is_empty = False
-                
+
             if not is_empty:
                 if group_nodes[attr_key].node_type == "unk":
                     group_nodes[attr_key].node_type = str(type(value))[8:-2]
@@ -434,15 +434,15 @@ class FileAnalyzer:
                     value = f"{len(value)} items"
                 elif isinstance(value, np.ndarray):
                     value = f"array({value.shape}) items"
-                    
-            # Ensure value is always a string for dictionary key
-            value = str(value)
 
-            group_nodes[attr_key].record_count += 1
-            if value not in group_nodes[attr_key].unique_values:
-                group_nodes[attr_key].unique_values[value] = 1
-            else:
-                group_nodes[attr_key].unique_values[value] += 1
+                # Ensure value is always a string for dictionary key
+                value = str(value)
+
+                group_nodes[attr_key].record_count += 1
+                if value not in group_nodes[attr_key].unique_values:
+                    group_nodes[attr_key].unique_values[value] = 1
+                else:
+                    group_nodes[attr_key].unique_values[value] += 1
 
     def update_node(self, prior_key, key, value):
         attr_key = f"{prior_key}.{key}" if key else prior_key
@@ -467,7 +467,7 @@ class FileAnalyzer:
             except (ValueError, TypeError):
                 # Fallback for values that can't be easily checked
                 is_empty = False
-                
+
             if not is_empty:
                 if self.nodes[attr_key].node_type == "unk":
                     self.nodes[attr_key].node_type = str(type(value))[8:-2]
@@ -476,15 +476,15 @@ class FileAnalyzer:
                     value = f"{len(value)} items"
                 elif isinstance(value, np.ndarray):
                     value = f"array({value.shape}) items"
-                
-            # Ensure value is always a string for dictionary key
-            value = str(value)
 
-            self.nodes[attr_key].record_count += 1
-            if value not in self.nodes[attr_key].unique_values:
-                self.nodes[attr_key].unique_values[value] = 1
-            else:
-                self.nodes[attr_key].unique_values[value] += 1
+                # Ensure value is always a string for dictionary key
+                value = str(value)
+
+                self.nodes[attr_key].record_count += 1
+                if value not in self.nodes[attr_key].unique_values:
+                    self.nodes[attr_key].unique_values[value] = 1
+                else:
+                    self.nodes[attr_key].unique_values[value] += 1
 
     def matches_filter(self, obj, filter_attr, filter_value):
         """Check if object matches the filter criteria"""
@@ -588,6 +588,116 @@ class FileAnalyzer:
                 parents.append({"node": next_node, "children": next_node.children.copy()})
 
         return [header] + rows
+
+    def generate_markdown_report(self):
+        """Generate markdown format schema report"""
+        lines = []
+
+        if self.group_by_attr:
+            # Multi-schema markdown format
+            total_schemas = len(self.groups)
+            total_fields = sum(len(group_data["nodes"]) - 1 for group_data in self.groups.values())  # -1 to exclude root
+
+            lines.append(f"**Total Schemas:** {total_schemas}")
+            lines.append(f"**Total Fields:** {total_fields}")
+            lines.append("")
+
+            for group_value in sorted(self.groups.keys()):
+                group_data = self.groups[group_value]
+                group_nodes = group_data["nodes"]
+                group_record_count = group_data["record_count"]
+                field_count = len(group_nodes) - 1  # Exclude root node
+
+                lines.append(f"## Schema: {group_value}")
+                lines.append("")
+                lines.append(f"**Record Count:** {group_record_count}")
+                lines.append(f"**Field Count:** {field_count}")
+                lines.append("")
+                lines.append("### Fields")
+                lines.append("")
+                lines.append("| # | Field Name | Type | Records | Pop % | Unique % | Sample Values |")
+                lines.append("|---|------------|------|---------|-------|----------|---------------|")
+
+                # Traverse nodes for this group
+                row_num = 0
+                root_node = group_nodes["root"]
+                parents = [{"node": root_node, "children": root_node.children.copy()}]
+                while parents:
+                    if len(parents[-1]["children"]) == 0:
+                        parents.pop()
+                        continue
+                    next_node = parents[-1]["children"][0]
+                    parents[-1]["children"].pop(0)
+
+                    row_num += 1
+                    field_name = next_node.node_desc
+                    field_type = next_node.node_type
+                    record_cnt = next_node.record_count
+                    pop_pct = f"{round(record_cnt / group_record_count * 100, 1)}%" if group_record_count else "0%"
+                    unique_cnt = len(next_node.unique_values)
+                    unique_pct = f"{round(unique_cnt / record_cnt * 100, 1)}%" if record_cnt else "0%"
+
+                    # Get top 5 sample values
+                    samples = []
+                    for k, v in sorted(next_node.unique_values.items(), key=lambda v: v[1], reverse=True)[:5]:
+                        samples.append(str(k)[:30])
+                    sample_str = ", ".join(samples)
+
+                    lines.append(f"| {row_num} | {field_name} | {field_type} | {record_cnt} | {pop_pct} | {unique_pct} | {sample_str} |")
+
+                    if next_node.children:
+                        parents.append({"node": next_node, "children": next_node.children.copy()})
+
+                lines.append("")
+        else:
+            # Single-schema markdown format
+            field_count = len(self.nodes) - 1  # Exclude root node
+            schema_name = pathlib.Path(self.file_name).stem
+
+            lines.append(f"**Total Schemas:** 1")
+            lines.append(f"**Total Fields:** {field_count}")
+            lines.append("")
+            lines.append(f"## Schema: {schema_name}")
+            lines.append("")
+            lines.append(f"**Record Count:** {self.record_count}")
+            lines.append(f"**Field Count:** {field_count}")
+            lines.append("")
+            lines.append("### Fields")
+            lines.append("")
+            lines.append("| # | Field Name | Type | Records | Pop % | Unique % | Sample Values |")
+            lines.append("|---|------------|------|---------|-------|----------|---------------|")
+
+            # Traverse nodes
+            row_num = 0
+            root_node = self.root_node
+            parents = [{"node": root_node, "children": root_node.children.copy()}]
+            while parents:
+                if len(parents[-1]["children"]) == 0:
+                    parents.pop()
+                    continue
+                next_node = parents[-1]["children"][0]
+                parents[-1]["children"].pop(0)
+
+                row_num += 1
+                field_name = next_node.node_desc
+                field_type = next_node.node_type
+                record_cnt = next_node.record_count
+                pop_pct = f"{round(record_cnt / self.record_count * 100, 1)}%" if self.record_count else "0%"
+                unique_cnt = len(next_node.unique_values)
+                unique_pct = f"{round(unique_cnt / record_cnt * 100, 1)}%" if record_cnt else "0%"
+
+                # Get top 5 sample values
+                samples = []
+                for k, v in sorted(next_node.unique_values.items(), key=lambda v: v[1], reverse=True)[:5]:
+                    samples.append(str(k)[:30])
+                sample_str = ", ".join(samples)
+
+                lines.append(f"| {row_num} | {field_name} | {field_type} | {record_cnt} | {pop_pct} | {unique_pct} | {sample_str} |")
+
+                if next_node.children:
+                    parents.append({"node": next_node, "children": next_node.children.copy()})
+
+        return "\n".join(lines)
 
     def generate_code_template(self):
         """Generate code template (non-grouped only for now)"""
@@ -1268,18 +1378,30 @@ Example: 'properties:type,country:number'""")
         sys.exit(shut_down)
     else:
         # Generate main schema report
-        report_rows = analyzer.generate("report")
         if args.output_file:
-            with open(args.output_file, "w") as file:
-                writer = csv.writer(file)
-                metadata_rows = [
-                    ["file_name", analyzer.file_name],
-                    ["file_type", analyzer.file_type],
-                    []
-                ]
-                writer.writerows(metadata_rows + report_rows)
-            print(f"statistical report saved to {args.output_file}\n")
+            # Check if output should be markdown or CSV
+            output_ext = pathlib.Path(args.output_file).suffix.lower()
+            if output_ext == '.md':
+                # Generate markdown format
+                markdown_content = analyzer.generate_markdown_report()
+                with open(args.output_file, "w") as file:
+                    file.write(markdown_content)
+                print(f"markdown schema saved to {args.output_file}\n")
+            else:
+                # Generate CSV format (default)
+                report_rows = analyzer.generate("report")
+                with open(args.output_file, "w") as file:
+                    writer = csv.writer(file)
+                    metadata_rows = [
+                        ["file_name", analyzer.file_name],
+                        ["file_type", analyzer.file_type],
+                        []
+                    ]
+                    writer.writerows(metadata_rows + report_rows)
+                print(f"statistical report saved to {args.output_file}\n")
         elif prettytable:
+            # Display to console
+            report_rows = analyzer.generate("report")
             report_viewer(report_rows)
         else:
             # Fallback: simple text output when prettytable is not available
