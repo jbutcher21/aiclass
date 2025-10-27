@@ -46,6 +46,7 @@ This demo shows you how to work with a small language model (SLM) running in a D
     **Notes for Windows Users:**
 
   - Ollama is being made available on port 11434 in the Docker container.  However, depending on how Docker was installed on your computer and the configuration your Windows firewall, this port might be blocked.  If you get a connection error when trying to connect to the Ollama API, you may need to adjust your firewall settings to allow connections to this port.  You can test if the port is actually accessible via `curl http://localhost:11434`.  If you receive anything other than a 200 response, you will need to adjust your firewall settings.
+  
   - Due to the way PowerShell handles quotes, it is recommended that you use the Command Prompt (`cmd`) to run the `curl` commands used in this module.  You will also need
   to adapt the quotes above for Windows as shown:
 
