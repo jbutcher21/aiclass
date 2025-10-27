@@ -41,6 +41,19 @@ This demo shows you how to work with a small language model (SLM) running in a D
     }' | jq -r .response
     ```
 
+    (Note that the `jq -r .response` part is just to format the output nicely.  If you do not have `jq` installed, you can just leave that part off.)
+
+    **Notes for Windows Users:**
+
+  - Ollama is being made available on port 11434 in the Docker container.  However, depending on how Docker was installed on your computer and the configuration your Windows firewall, this port might be blocked.  If you get a connection error when trying to connect to the Ollama API, you may need to adjust your firewall settings to allow connections to this port.  You can test if the port is actually accessible via `curl http://localhost:11434`.  If you receive anything other than a 200 response, you will need to adjust your firewall settings.
+  - Due to the way PowerShell handles quotes, it is recommended that you use the Command Prompt (`cmd`) to run the `curl` commands used in this module.  You will also need
+  to adapt the quotes above for Windows as shown:
+
+  ```cmd
+  curl -s http://localhost:11434/api/generate -d "{\"model\": \"tinyllama\", \"prompt\": \"One-line summary of entity resolution. Keep it under 12 words.\", \"stream\": false}"
+  ```
+
+
 Assuming this above all runs correctly and the final step gives you a response from the SLM, you now have your SLM running as a REST API on your local machine.  We can now use this to start mapping data to Senzing JSON!
 
 ## 🤖 Using the SLM to Create Senzing JSON Mapping Code
