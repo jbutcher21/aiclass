@@ -23,7 +23,7 @@ class OllamaSenzingMapper:
     def create_mapping_prompt(self, csv_file: str, schema_info: str, sample_data: List[Dict]) -> str:
         """Create a comprehensive prompt for the SLM to generate mapping code."""
 
-        prompt = f"""
+        prompt = """
 
 Write a simple python program using standard libraries to map the records in a csv source file to json records 
 and output them to a jsonl file using the mapping table below.
