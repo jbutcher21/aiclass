@@ -124,6 +124,8 @@ Assuming this all runs successfully, you will be able to confirm that that the o
 ./tools/sz_json_analyzer.py -i ./output.jsonl 
 ```
 
+If you run this and receive no errors, then congratulations!  You have successfully used a small language model (SLM) to generate Senzing JSON mapping code!
+
 ## 📝 Notes
 
 Any time you are creating things with LLMs or SLMs, the process is pretty iterative, particularly when you are doing prompt engineering.  Be patient and have fun!  
