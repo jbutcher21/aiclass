@@ -28,44 +28,7 @@ class OllamaSenzingMapper:
 Write a simple python program using standard libraries to map the records in a csv source file to json records 
 and output them to a jsonl file using the mapping table below.
 
-
-- all target attribute values must be scalar strings
-- add a parameter for input and output files
-
-sample json structure:
-{ 
-    "DATA_SOURCE": "ABC",
-    "RECORD"
-
-}
-
-## Employee Record Mapping (`DATA_SOURCE` = `US_EMPLOYEES`, `RECORD_TYPE` = `PERSON`)
-| SourceField | SenzingAttribute | Transform | Constraints | Evidence | Confidence |
-| --- | --- | --- | --- | --- | --- |
-| DATA_SOURCE | Hard coded to 'US_EMPLOYEES' | | | High |
-| emp_num | RECORD_ID | Trim value; emit unchanged | Must remain unique within `US_EMPLOYEES` | [Spec §Attributes for the Record Key: "RECORD_ID"] | High |
-| emp_num | REL_ANCHOR_DOMAIN=`US_EMPLOYEES`, REL_ANCHOR_KEY=emp_num | Emit a single REL_ANCHOR per employee | Only one anchor per record | [Spec §Feature: REL_ANCHOR: "REL_ANCHOR_KEY"] | Medium |
-| last_name | NAME_LAST | Trim; combine with first/middle in one NAME object | Keep parsed person fields together | [Spec §Feature: NAME: "NAME_LAST"] | High |
-| first_name | NAME_FIRST | Trim; combine with last/middle | Skip if blank | [Spec §Feature: NAME: "NAME_FIRST"] | High |
-| middle_name | NAME_MIDDLE | Trim; include when present | Exclude literal `null` | [Spec §Feature: NAME: "NAME_MIDDLE"] | Medium |
-| addr1 | ADDR_LINE1 | Trim | Do not emit empty strings | [Spec §Feature: ADDRESS: "ADDR_LINE1"] | High |
-| city | ADDR_CITY | Trim | — | [Spec §Feature: ADDRESS: "ADDR_CITY"] | High |
-| state | ADDR_STATE | Uppercase | Require two-letter code | [Spec §Feature: ADDRESS: "ADDR_STATE"] | High |
-| zip | ADDR_POSTAL_CODE | Trim; preserve punctuation | Keep leading zeros | [Spec §Feature: ADDRESS: "ADDR_POSTAL_CODE"] | High |
-| home_phone | PHONE_NUMBER (+PHONE_TYPE=`HOME`) | Normalize separators; set PHONE_TYPE from column semantics | One PHONE object per value | [Spec §Feature: PHONE: "PHONE_NUMBER"]; [Spec §Feature: PHONE: "PHONE_TYPE"] | High |
-| dob | DATE_OF_BIRTH | Trim; emit as provided | Skip literal `null` | [Spec §Feature: DOB (Date of Birth): "DATE_OF_BIRTH"] | Medium |
-| ssn | SSN_NUMBER | Trim; keep format | Validate against SSN pattern before output | [Spec §Feature: SSN (US Social Security Number): "SSN_NUMBER"] | High |
-| employer_name + employer_addr | REL_POINTER_DOMAIN=`US_EMPLOYERS`, REL_POINTER_KEY=deterministic employer ID, REL_POINTER_ROLE=`EMPLOYED_BY` | Normalize employer_name/address, compute deterministic ID (e.g., SHA-1 hex of normalized pair) and emit REL_POINTER to matching employer record | Pointer key must match employer anchor key; role string standardized as `EMPLOYED_BY` | [Spec §Feature: REL_POINTER: "REL_POINTER_KEY"]; [Spec §Feature: REL_POINTER: "REL_POINTER_ROLE"] | Medium |
-| id_type=`DL`, id_number, id_country | DRIVERS_LICENSE_NUMBER & DRIVERS_LICENSE_STATE | Map number/state when `DL`; uppercase state | Require both number and state | [Spec §Feature: DRLIC (Driver’s License): "DRIVERS_LICENSE_NUMBER"]; [Spec §Feature: DRLIC (Driver’s License): "DRIVERS_LICENSE_STATE"] | Medium |
-| id_type=`PP`, id_number, id_country | PASSPORT_NUMBER & PASSPORT_COUNTRY | Map when `PP`; uppercase country | Require issuer country | [Spec §Feature: PASSPORT: "PASSPORT_NUMBER"]; [Spec §Feature: PASSPORT: "PASSPORT_COUNTRY"] | Medium |
-| id_type other (e.g., `student_id`) | OTHER_ID_TYPE/NUMBER/COUNTRY | Use `id_type` as OTHER_ID_TYPE; trim values | Skip if number missing | [Spec §Feature: OTHER_ID: "OTHER_ID_TYPE"]; [Spec §Feature: OTHER_ID: "OTHER_ID_NUMBER"]; [Spec §Feature: OTHER_ID: "OTHER_ID_COUNTRY"] | Medium |
-| manager_id | REL_POINTER_DOMAIN=`US_EMPLOYEES`, REL_POINTER_KEY=manager_id, REL_POINTER_ROLE=`REPORTS_TO` | Emit pointer when populated | Ensure anchors exist for targets | [Spec §Feature: REL_POINTER: "REL_POINTER_KEY"]; [Spec §Feature: REL_POINTER: "REL_POINTER_ROLE"] | Medium |
-| sherrifs_card | OTHER_ID_TYPE=`SHERRIFS_CARD`, OTHER_ID_NUMBER | Split comma-separated tokens; trim each | Ignore blanks; optional country absent | [Spec §Feature: OTHER_ID: "OTHER_ID_TYPE"]; [Spec §Feature: OTHER_ID: "OTHER_ID_NUMBER"] | Medium |
-| job_category | Root payload attribute `job_category` | Trim; emit scalar at record root | Keep outside `FEATURES`; store raw category | [Spec §Payload Attributes (Optional): "Optional root level attributes"] | Medium |
-| job_title | Root payload attribute `job_title` | Trim; emit scalar at record root | Keep outside `FEATURES`; store raw title | [Spec §Payload Attributes (Optional): "Optional root level attributes"] | Medium |
-| hire_date | Root payload attribute `hire_date` | Trim; emit scalar at record root | Keep outside `FEATURES`; store raw date string | [Spec §Payload Attributes (Optional): "Optional root level attributes"] | Medium |
-| salary | UNMAPPED | — | Compensation outside registered features | [Spec §What Features to Map] | Medium |
-| rehire_flag | UNMAPPED | — | Always `null`; no feature | [Spec §What Features to Map] | High |
+...WRITE YOUR INSTRUCTIONS HERE...
 
 """
 
